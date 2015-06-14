@@ -22,31 +22,23 @@
         <!-- Right Nav Section -->
         <ul class="right">
           <li class="has-dropdown">
-            <a href="#">Test Button Dropdown</a>
+            <a href="#">Right Button Dropdown</a>
             <ul class="dropdown">
-              <li><a href="#">Reg</a></li>
-              <li class="active"><a href="#">Lit</a></li>
+              <li><a href="#">First link in dropdown</a></li>
+              <li class="active"><a href="#">Active link in dropdown</a></li>
             </ul>
           </li>
         </ul>
 
         <!-- Left Nav Section -->
         <ul class="left">
-          <li class="active"><a href="index.html">Home</a></li>
           <li><a href="about.html">About</a></li>
 
           <li class="has-dropdown">
-            <a href="#">Thoughts</a>
+            <a href="#">Blog</a>
             <ul class="dropdown">
               <li><a href="/blog/highschool.html">A Problem with High School</a></li>
-            </ul>
-          </li>
-
-          <li class="has-dropdown">
-            <a href="#">Problems & Solutions</a>
-            <ul class="dropdown">
-              <li><a href="/prob/steppingstones.html">Stepping Stones</a></li>
-              <li><a href="/prob/eggdrop.html">Egg Drop</a></li>
+              <li class="active"><a href="#">Active link in dropdown</a></li>
             </ul>
           </li>
         </ul>
@@ -55,11 +47,11 @@
         
     <div class="row">
       <div class="large-12 columns">
-        <h1>The content is more interesting.</h1>
+        <h1>Welcome to Foundation</h1>
       </div>
     </div>
     
-    <!--<div class="row">
+    <div class="row">
       <div class="large-12 columns">
       	<div class="panel">
 	        <h3>We&rsquo;re stoked you want to try Foundation! </h3>
@@ -83,6 +75,7 @@
     <div class="row">
       <div class="large-8 medium-8 columns">
         <h5>Here&rsquo;s your basic grid:</h5>
+        <!-- Grid Example -->
 
         <div class="row">
           <div class="large-12 columns">
@@ -198,7 +191,7 @@
         	<a href="http://foundation.zurb.com/docs/" class="small button">Go to Foundation Docs</a>          
         </div>
       </div>
-    </div>-->
+    </div>
     
     <script src="js/vendor/jquery.js"></script>
     <script src="js/foundation.min.js"></script>
