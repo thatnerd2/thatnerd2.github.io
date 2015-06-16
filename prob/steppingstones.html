@@ -1,0 +1,58 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stepping Stones</title>
+    <link rel="stylesheet" href="/css/foundation.css" />
+    <script src="/js/vendor/modernizr.js"></script>
+  </head>
+  <body>
+    <div class="row">
+      <div class="large-12 columns">
+        <h1>Stepping Stones</h1>
+        <h2 class="subheader">clever</h2>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class = "row">
+      <div class="large-8 medium-8 columns">
+        <p>Suppose you have a big line of individual stones going down a pond.  You start at the left and move towards the right.</p>
+        <!-- IMAGE HERE -->
+        <P>There are two moves you can make.  You can either move from one adjacent stone to another, or you can hop over one stone and reach the stone after.  Count the number of ways you can get to each stone in the diagram, <b>assuming that the there is 1 way to get to the first stone.</b></p>
+        <br>
+        <br>
+        <ul class="accordion" data-accordion>
+          <li class="accordion-navigation">
+            <a href="#panel1a">Hint</a>
+            <div id="panel1a" class="content">
+              Try counting case by case.  For example, there is only one way to get to the second stone, but there are two ways to get to the third stone (you can hop from the first, or move once to the second and move once again to the third).
+            </div>
+          </li>
+          <li class="accordion-navigation">
+            <a href="#panel1b">Solution</a>
+            <div id="panel1b" class="content">
+              <p>Let's think about how to get to the third stone.  You can either hop from two stones before the third stone, or you can move once from the second stone.  Since there is one way to get to either, there is a sum total of two ways to get to the third stone.</p>
+              <p>Now let's think about the fourth stone.  You can either hop from two stones before the fourth stone, or you can move once from the third stone.  Since there is one way to get to the second stone, and two ways to get to the third, there is a sum total of 3 ways to get to the fourth stone</p>
+              <p>Now let's think about the fifth stone.  You can either hop from two stones be...wait a second!  You can describe the way to get to any stone recursively!</p>
+              <p>Suppose we have <MATH>f(n)</MATH> where n is the nth stone you would like to reach.  By the above recursive relationship (recurrence relation) we can say that:</p>
+              <p><MATH>f(n) = f(n - 1) + f(n - 2)</MATH></p>
+              <p>Look familiar?  This is the Fibbonacci sequence!</p>
+            </div>
+        </ul>
+        <br>
+        <p><a href="/index.html" class="small button">Home</a><br/>
+      </div>
+
+    </div>
+
+    
+    <script src="/js/vendor/jquery.js"></script>
+    <script src="/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+    </script>
+  </body>
+</html>
