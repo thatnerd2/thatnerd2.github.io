@@ -19,7 +19,64 @@
 
     <div class = "row">
       <div class="large-8 medium-8 columns">
-        <p>Yeah okay when I figure this one out I'll let you know.</p>
+        <p>As a budding algorithmist, you have decided to test your skills by determining <b>the mininum number of egg drops it would take to determine which floor in a 100 floor building is high enough to, upon dropping an egg from that floor, break an egg.</b>  You have two eggs in hand to figure this out, and when you begin, you have absolutely no idea which floor it is.  You can make a few assumptions though:</p>
+        <ul>
+          <li>Dropping an egg from a floor and having that egg break means that that egg would break from any higher floor.</li>
+          <li>Dropping an egg from a floor and having that egg not break means that you can reuse the egg.</li>
+          <li>You can break both eggs as long as in the end, you can declare with certainty that you have found the highest, non-egg breaking floor.</li>
+        </ul>
+        <p>So what's the minimum number of egg drops it would take?</p>
+        
+        <ul class="accordion" data-accordion>
+          <li class="accordion-navigation">
+            <a href="#panel1a">Hint</a>
+            <div id="panel1a" class="content">
+              <p>You have to solve this problem in general, so you must determine what the minimum number of drops is no matter where the highest non-breaking floor is.  Let's think about the two distinct consequences to dropping an egg</p>
+
+              <h2>The Egg Breaks</h2>
+
+              <p>If the egg breaks by dropping it from floor <i>f</i>, then we know that we need <i>f - 1</i> or fewer more drops with the other egg, starting from the lowest known floor.  Therefore, if we drop an egg from floor 15 and the egg breaks, then we need 14 more drops (floors 1-14 inclusive) to determine the highest non-breaking floor for sure.  Likewise, if the egg doesn't break on floor 15, then we drop it from floor 30 and it breaks, then we need 13 more drops to determine for sure (floors 16-29 inclusive).</p>
+
+              <h2>The Egg Doesn't Break</h2>
+
+              <p>If the egg doesn't break, then we still have two eggs, but we have fewer floors to test.  Suppose again that we drop an egg from floor <i>f</i>.  Then we repeat this same problem except with f fewer floors.  If we drop the egg from floor 15 and it doesn't break, then it's like we have the same problem but with 85 floors (floors 15-100).  Interesting.</p>
+            </div>
+          </li>
+          <li class="accordion-navigation">
+            <a href="#panel1b">Solution</a>
+            <div id="panel1b" class="content">
+              <p>The gotcha in this problem is that we really can't detemerine where the "worst case" floor is, because as it so happens, we can only know that <i>after</i> we've solved the problem.  As a result, this problem is hard to think about.  Assuming that the worst case scenario is the 100th floor will only have you chasing your own tail.</p>
+
+              <p>The solution is 14 drops minimum.  This is because you would drop the first egg on the 14th floor.  If it breaks, then you need to try floors 1-13, for a total of 14 drops.  If it doesn't break, try floor 27 (14 + 13).</p>
+
+              <p>If the egg dropped from floor 27 breaks, then you try floors 15-26, for a total of 12 + 2 (floors 27 and 14) = 14 drops.  If it doesn't break, then you try floor 39 (27 + 12).
+
+              <p>If the egg dropped from floor 39 breaks, then you try floors (28-38) for a total of 11 + 3 (floors 14, 27 and 39) = 14 drops.  If it doesn't break, you try floor 50 (39 + 11).  The pattern continues all the way up. </p>
+
+              <p>When you reach 100 which is the exception, if it breaks, you have to try floors 96-99, for a total of 4 + 9 drops (floors 14, 27, 39, 50, 60, 69, 78, 87, 96) = 13.  So no matter where the egg breaks, the minimum # of drops required is 14 <i>because it took at least 14 drops for any given floor</i>.</p>
+
+              <p>Okay so where did 14 come from?  Well, we staggered the floors, but why by 14?  Let's start from the beginning.</p>
+
+              <h2>Finding a "Minimum"</h2>
+              <p>So we have to figure out how to equalize the minimum no matter where the breaking floor is.  The trick is that we stagger the floors, so that at any given floor when the egg breaks, the resulting needed drops always makes the same total in the end.  That's why we were counting down the skip (we added 13 to 14, but only 12 to 27 and then 11 to 39 and 10 to 50 and so on.)  We reduced each skip by 1 because it took 1 more drop to get to the next staggered floor (14, 27, 39, etc.).  That way, the number of <b>total</b> drops was always the same.</p>
+
+              <p>Okay but why 14?  The answer is a little mathy, but it's cool, I promise!  Let's suppose we have no idea what the gap should be, and we have no idea that the gap is supposed to be 14.  Let's say it's G.  Then we have the Gth floor, then the (G - 1)th floor, then the (G - 2)th floor.  And we know that the building has 100 floors, so we need to figure out how to end (G - some number) at 100.  So therefore we want G + (G - 1) + (G - 2) + ... + 2 + 1 to be equal to 100, so we would perfectly arrive at the 100th floor, and ideally it would be the 14th drop.  Let's summarize here with an equation.</p>
+
+              <pre>
+                G + (G - 1) + (G - 2) + (G - 3) + ... + 2 + 1 = 100
+                By sum of arithmetic series
+                0.5(G(G + 1)) = 100
+                G(G + 1) = 200
+                G*G + G - 200 = 0
+              </pre>
+              <p>By the quadratic formula, G = 13 point something, but since we're dealing with integers here we will say 14.  (This is why I mentioned that floor 100 was an exception.  If it really was 13 point something, then we could do it perfectly!)</p>
+
+              <p>So just to reiterate, what is G?  It's the "gap" that we need between staggering the floors.  So for each floor we go, we skip the gap and then subtract 1 to account for dropping from the initial floor we skipped to.  The G, G - 1, G - 2, G - 3 thing accounts for the subtracting 1.
+
+              <p>Isn't that neat?</p>
+            </div>
+        </ul>
+        <br>
         <p><a href="/index.html" class="small button">Home</a><br/>
       </div>
 
