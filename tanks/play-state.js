@@ -88,13 +88,16 @@ function create() {
         enemies[id].move();
       }
     }, this);
+
+    game.time.events.loop(Phaser.Timer.SECOND, function () {
+      console.log(game.time.fps + " FPS");
+    }, this);
   }
   game.time.advancedTiming = true;
 }
 
 function update() {
   if (ready) {
-    game.debug.text(game.time.fps, 2, 14, "#00ff00");
     game.physics.arcade.collide(tanks, walls);
     game.physics.arcade.collide(tanks, tanks);
     game.physics.arcade.collide(bullets, walls, bulletWallCollide, null, this);
