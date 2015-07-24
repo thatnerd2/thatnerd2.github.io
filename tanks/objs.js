@@ -48,7 +48,13 @@ function bulletWallCollide (b, w) {
 
 function destroyTank (a, b) {
   bulletDie(b);
-  if (a.parentFcn.gameObjType == "PLAYER") {}
+  if (a.parentFcn.gameObjType == "PLAYER") {
+    if (isMultiplayer) {}
+    else {
+      players[0].die();
+      gameOver();
+    }
+  }
   else {
     for (var id in enemies) {
       if (id == a.parentFcn.multiplayerIx) {
@@ -72,7 +78,7 @@ function createWallGroup () {
   group.add(borderBottom);
   group.add(borderLeft);
   group.add(borderRight);
-  group.createMultiple(40, 'wall1');
+  group.createMultiple(80, 'wall1');
   group.setAll('body.immovable', 'true');
   return group;
 }

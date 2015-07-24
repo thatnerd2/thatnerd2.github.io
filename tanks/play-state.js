@@ -3,6 +3,7 @@ var walls;
 var tanks;
 var players = [];
 var player;
+var layout;
 var enemies = {};
 var playState = function (game) {
   ready = false;
@@ -15,33 +16,59 @@ playState.prototype = {
 }
 
 function preload() {
-    game.load.image('tankcenter', 'assets/tankcenter.png');
-    game.load.image('redtankbody', 'assets/redtankbody.png');
-    game.load.image('redtankhead', 'assets/redtankhead.png');
+  layout = getLayout(level);
+  game.load.image('tankcenter', 'assets/tankcenter.png');
+  game.load.image('redtankbody', 'assets/redtankbody.png');
+  game.load.image('redtankhead', 'assets/redtankhead.png');
+  
+  if (layout.brownTanks.length > 0) {
     game.load.image('browntankhead', 'assets/browntankhead.png');
     game.load.image('browntankbody', 'assets/browntankbody.png');
+  }
+
+  if (layout.grayTanks.length > 0) {
     game.load.image('graytankbody', 'assets/graytankbody.png');
     game.load.image('graytankhead', 'assets/graytankhead.png');
+  }
+
+  if (layout.tealTanks.length > 0) {
     game.load.image('tealtankhead', 'assets/tealtankhead.png');
     game.load.image('tealtankbody', 'assets/tealtankbody.png');
-    game.load.image('horizontal_border', 'assets/horizontal_border.png');
-    game.load.image('vertical_border', 'assets/vertical_border.png');
-    game.load.image('wood', 'assets/wood.jpg');
-    game.load.image('wall1', 'assets/wall1.png');
-    game.load.image('bullet_slow', 'assets/bullet_slow.png');
-    game.physics.startSystem(Phaser.Physics.ARCADE);
-
-    this.cursors = {
-      up: game.input.keyboard.addKey(Phaser.Keyboard.W),
-      down: game.input.keyboard.addKey(Phaser.Keyboard.S),
-      left: game.input.keyboard.addKey(Phaser.Keyboard.A),
-      right: game.input.keyboard.addKey(Phaser.Keyboard.D)
-    }
-    this.layout = getLayout(level);
-
-    if (isMultiplayer) server.readyToStart(clientId);
-    else ready = true;
   }
+  
+  if (layout.circleTanks.length > 0) {
+    game.load.image('circletankbody', 'assets/circletankbody.png');
+    game.load.image('circletankhead', 'assets/circletankhead.png');
+  }
+  
+  if (layout.blueTanks.length > 0) {
+    game.load.image('bluetankbody', 'assets/bluetankbody.png');
+    game.load.image('bluetankhead', 'assets/bluetankhead.png');
+  }
+
+  if (layout.greenTanks.length > 0) {
+    game.load.image('greentankbody', 'assets/greentankbody.png');
+    game.load.image('greentankhead', 'assets/greentankhead.png');
+  }
+
+  game.load.image('horizontal_border', 'assets/horizontal_border.png');
+  game.load.image('vertical_border', 'assets/vertical_border.png');
+  game.load.image('wood', 'assets/wood.jpg');
+  game.load.image('wall1', 'assets/wall1.png');
+  game.load.image('bullet_slow', 'assets/bullet_slow.png');
+  game.physics.startSystem(Phaser.Physics.ARCADE);
+
+  this.cursors = {
+    up: game.input.keyboard.addKey(Phaser.Keyboard.W),
+    down: game.input.keyboard.addKey(Phaser.Keyboard.S),
+    left: game.input.keyboard.addKey(Phaser.Keyboard.A),
+    right: game.input.keyboard.addKey(Phaser.Keyboard.D)
+  }
+  
+
+  if (isMultiplayer) server.readyToStart(clientId);
+  else ready = true;
+}
 
 function create() {
   game.add.sprite(0, 0, 'wood');
@@ -50,10 +77,10 @@ function create() {
   walls = createWallGroup();
   tanks = game.add.physicsGroup(Phaser.Physics.ARCADE);
 
-  enactLayout(this.layout);
+  enactLayout(layout);
   
-  for (var i = 0; i < this.layout.players.length; i++) {
-    var p = new Player(game, this.layout.players[i].x, this.layout.players[i].y);
+  for (var i = 0; i < layout.players.length; i++) {
+    var p = new Player(game, layout.players[i].x, layout.players[i].y);
     players.push(p);
     tanks.add(p.heart);
   }
@@ -89,9 +116,9 @@ function create() {
       }
     }, this);
 
-    game.time.events.loop(Phaser.Timer.SECOND, function () {
+    /*game.time.events.loop(Phaser.Timer.SECOND, function () {
       console.log(game.time.fps + " FPS");
-    }, this);
+    }, this);*/
   }
   game.time.advancedTiming = true;
 }
