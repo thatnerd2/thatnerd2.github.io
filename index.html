@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/css/foundation.css" />
     <script src="/js/vendor/modernizr.js"></script>
     <script src="/js/processing.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   </head>
   <body>
 
@@ -45,10 +46,10 @@
         </ul>
       </section>
     </nav>
-        
+
     <div class="row">
       <div class="large-12 medium-12 columns">
-        <h1>Making a website in 50 minutes using Github Pages</h1>
+        <h1 id="hello">Making a website in 50 minutes using Github Pages</h1>
         <hr>
         <h2>Step 1: Download Git</h2>
           <p>You can either get the download from here: <a href="https://git-scm.com/downloads">https://git-scm.com/downloads</a>, or search "git download"</p>
@@ -120,7 +121,7 @@
           <p>Now you're ready to push to the online version.  Type "git push origin master" and enter your login information.  Check github.com and see that index.html has appeared.  Then go to yourusername.github.io, and see that it says Hello world!  Congrats!</p>
         <hr>
 
-        <h2>Step 8: Reflection</h2>
+        <h2>Step 8: Recap</h2>
           <p>Okay so let's go over what you have right now.  You have:</p>
           <ul class="disc">
             <li>A github account with a Github Pages repository (a special kind of repository that is hosted at yourusername.github.io)</li>
@@ -145,9 +146,87 @@
               <li>Node.js - Javascript on the server side, pretty new (2009)</li>
             </ul>
           </ul>
+          <p>Obviously we don't have time to cover everything, so here are some tips.</p>
+
+        <h3>Principles of HTML</h3>
+          <p>HTML is very different from C++, Java, Python, MATLAB, SQL, etc.  It is somewhat intuitive, in that what you write is what you get.  If you write code for a button after you write code for a paragraph, then the button will show up after the paragraph.</p>
+          <p>Things like paragraphs, links, buttons, inputs, headings, etc. are very easy to use.</p>
+          <p>There are 2 main ideas I want to clear up (because they caused me the most initial confusion).  One is formatting - there are three types of "display type" for lack of a better term.  There is "block", "inline-block" and "inline".  "Block" display types have heights and widths and nothing else can interfere with them.  An image has a block display type, because I can't just stick a paragraph right in the middle of it (by default).  Inline is the opposite - it's like a stream of water.  It can be pushed around things, like how a link can be pushed around.  You'll have to play around with it to see what I mean.  Inline-block is a combination of these styles, so it has a width and a height but it can move around more freely than blocks can.</p>
+          
+          <p>The second idea that might be confusing is the idea of the "Document Object Model", and more specifically classes and identifiers (ids).  The DOM is what links the HTML to the Javascript and CSS.  Each element can be given one or more classes, and/or one unique identifier.  That way, you can reference that thing later in CSS.  For example, if I have the paragraph:
+          <pre> 
+          &lt;p&gt;Hello there&lt;p&gt;
+          </pre>
+
+          <p>and I want to make it blue in a CSS file, then how do I make sure I'm talking about that specific paragraph?  I give it an id, like this:</p>
+          <pre>
+            &lt;p id='myText'&gt;Hello there&lt;p&gt;
+          </pre>
+          <p>and reference it like this in my CSS file:</p>
+          <pre>
+            #myText {color: blue;}
+          </pre>
+          <p>The # means id, and the . means class.  So if I want to make a bunch of different things have blue text, then I would label all of them with the class, say, class="makeMeGreen", and write .makeMeGreen { color: green } to turn them all green.</p>
+
+        <h3>Design</h3>
+          <p>Graphic design is really hard.  Usually, one would go about styling elements (fonts, colors, etc.) using CSS.  However, there are some preset libraries, like Bootstrap by Twitter and Foundation by Zurb (which this site uses) to make life easier.  Bootstrap is probably the most frequently used, found <a href="http://getbootstrap.com/2.3.2/">here</a>.  It's way better than winging it, but it won't make your site look "unique," because these libraries are industry standard.  If you have the chops to design, then by all means, but for the mortals, this is a big help.</p>
+          <p>If you go to the download section and download Bootstrap, you'll find css, img and js folders to put in your git repository.  In your index.html file, you can link these files in using the following:</p>
+          <pre>
+            (Replace "bootstrap.min.css" with any other css file to include it.)  &lt;link rel="stylesheet" href="/css/bootstrap.min.css" /&gt;
+            (Replace "bootstrap.min.js" with any other js file to include it.)    &lt;script src="/js/bootstrap.min.js"&gt;&lt;/script&gt;
+          </pre>
+          <p>Follow the examples on Bootstrap's website to get a feel for how to use these things.</p>
+        
+        <h3>Quick guide to Javascript</h3>
+          <p>Javascript makes things happen on the same page.  If you're going to just write a blog, then you probably don't need it very much because links come free with HTML.  But if you want to say, make a button click generate an on screen alert, you'll need Javascript.  Facebook, for example, does tons of stuff without the user ever leaving the page.  So does Gmail.  They both use lots and lots of Javascript to make that happen.  Javascript fuels chat programs (that's a fun project), friend requests, autocomplete on search engines, you name it.  It is the language of the web.</p>
+
+          <p>Your Javascript lives within script tags, and you can think of the script tags as building this massive page of Javascript, so what you write in hello.js is accessible in goodbye.js, and vice versa.  You may have heard of helper frameworks like JQuery and React.js on the web - they function much like Bootstrap to "wrap away" some of the tougher Javascript things.  You can use them if you'd like - there are probably more people using helper libraries than writing cold Javascript today.</p>
+
+          <p>Try this.  Put an id on one of your elements, and then on the bottom of your page, write:</p>
+          <pre>
+            &lt;script&gt;
+              document.getElementById("yourid").addEventListener("click", sayHello);
+              function sayHello (e) {
+                alert("Hello");
+              }
+            &lt;script&gt;
+          </pre>
+          <p>Refresh your page, and click on the element.  It should pop up with a window that says "Hello".  If it doesn't, then you missed a brace, or parenthese or bracket or something else somewhere.  One difficult thing with Javascript is it doesn't tell you what you did wrong unless you open the console (F12 on Chrome, Alt+Command+C on Safari, ? for Firefox).</p>
+          <p>An equivalent statement in Jquery would be:</p>
+          <pre>
+            &lt;script&gt;
+              $("#yourid").click(function (e) {
+                alert("Hello");
+              });
+            &lt;script&gt;
+          </pre>
+          <p>This would work after you include jquery by downloading it and then inserting it like we did with Bootstrap, or you could insert this line:</p>
+          <pre>
+            &lt;script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"&gt;&lt;/script&gt;
+          </pre>
+          <p>which grabs it from a CDN (content delivery network) provided by Microsoft or Google.</p>
+          <p>As expected, Javascript is heavily, heavily googleable, so simply googling "How do I make ..." will usually yield results from Stack Overflow or other sites</p>
+        <h2>What's next?</h2>
+          <p>Write a blog, or make a support website for an issue you care about (today, I came across <a href="http://www.spotthedrowningchild.com">this</a>), or make a game (I recommend <a href="http://phaser.io">Phaser</a>, which I made Tanks! with (see under "Problems and Solutions")).  Web is taking over the world, so might as well learn how to speak its languages!</p>
+        <h2>Glossary</h2>
+        <p>These are just a few terms in the web world that I originally was confused with.  Maybe we need a web urban dictionary or something.</p>
+        <ul class="disc">
+          <li>Minified: The code has been compressed so that there are no spaces.  This makes it take up less memory and run faster.  It is usually the min suffix on JS and CSS files (like bootstrap.min.css)</li>
+          <li>SaaS: Software as a Service, which is a general term for online services where the user doesn't "own" the program.  It's become a bit of a joke term</li>
+          <li>React.js: A Javascript framework that Facebook uses.  Starting to grow in popularity nowadays.</li>
+          <li>Webkit: the rendering engine of some browsers like Safari and Chrome.  Rendering engines turn HTML into what you see in the browser.</li>
+          <li>V8, Spidermonkey, Nitro engines: Javascript engines that compile and run Javascript in the browser</li>
+          <li>DOM: Document Object model, used as a way to communicate between CSS, JS, and HTML</li>
+          <li>Heroku: Another web hosting service with a free tier, also allows server side code to be run (Github pages <b>does not allow this</b>)</li>
+        </ul>
       </div>
 
     </div>
+    <script>
+      $("#hello").click(function (e) {
+        alert("hey");
+      });
+    </script>
     
     <!--<div class="row">
       <div class="large-12 columns">
