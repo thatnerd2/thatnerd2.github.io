@@ -47,10 +47,106 @@
     </nav>
         
     <div class="row">
-      <div class="large-8 medium-8 columns">
-        <h1>Why we write</h1>
-        <p>
+      <div class="large-12 medium-12 columns">
+        <h1>Making a website in 50 minutes using Github Pages</h1>
+        <hr>
+        <h2>Step 1: Download Git</h2>
+          <p>You can either get the download from here: <a href="https://git-scm.com/downloads">https://git-scm.com/downloads</a>, or search "git download"</p>
+          <h3>Optional Reading: What is Git?</h3>
+            <p>Git is a very popular tool that we use to keep track of versions of software.  Each version is called a commit, and it consists of all the files in a particular folder (that folder is called the repository).</p>
+            <p>For example, let's say that you have a folder with a text file with your name in it.  This could be your first commit.  Then perhaps you change the name to be the name of your mom.  Then you add that file to the next commit, and now you have two commits.  With Git, you can now switch between those versions at will, or write yourself messages about those versions, or look at the log of changes over time, etc.  The real strength of Git is version control <b>among multiple people</b>, which is really a pain otherwise.  But we won't be worrying about that here.</p>
+          <h4>Further reading</h4>
+            <p>Git is a type of "version control system" like Subversion and CVS.  It was developed by Linus Torvalds, who was also the principal force behind the most popular Linux kernel for a lot of Linux operating systems today.  There's an online book you can learn more about Git from <a href="https://git-scm.com/book/en/v2">here</a></p>
+        <hr>
+
+        <h2>Step 2: Get a Github Account</h2>
+          <p>Sign up <a href="https://github.com">here</a>. It's free!</p>
+        <hr>
+
+        <h2>Step 3: Setup a repository with specific naming conventions</h2>
+          <p>Find the button that says "New Repository" and click it.  Then name your repository like this: yourusername.github.io where yourusername is replaced by your github account username.  My username is thatnerd2, so I named my repository thatnerd2.github.io.  It must be like this in order to access a specific feature of Github called Github Pages, which is like a free website hosting from Github.  The description is optional, and I would check "Initialize this repository with a README"</p>
+          <h3>Optional Reading: What is Github?</h3>
+            <p>Github is <b>always tied to git, but git is not always tied to Github</b>.  Github is essentially an online tool (called a service) that lets people publish their code online, using git.  It is one of many tools that do this.  The advantage of doing this is that once you put up a code project, you can access it from any computer by "pulling it down" to that computer using git.  We'll talk about this later.</p>
+        <hr>
+
+        <h2>Step 4: Clone your repository<h2>
+          <ul class="disc">
+            <li>Make a new folder on your computer somewhere that you want to store the website.</li>
+            <li>Open Git Bash (program on your computer that was installed when you downloaded Git)</li>
+            <li>Use cd and ls commands to get your folder.  Type "ls" and press enter to see a list of folders.  Type "cd foldername" to get in that folder.  Repeat until you get <i>inside</i> of the folder you want your website in.</li>
+            <li>Go to your repository on github.com and copy the "HTTPS clone URL."  If you checked the README box, then it should be on the right.  Otherwise you can just use Ctrl+F to find "HTTPS" on the page.</li>
+            <li>Go back to Git bash, and type in "git clone " and then paste the clone url.  If paste only displays ^V, then click on the icon in the top left of the bash window, then Edit, then Paste.  Or you could go the long way and manually copy it.</li>
+            <li>Congrats, you have the repository in your computer now.  Git's clone command just copies down whatever repository you have at the url into your folder. 
+          </ul>
+        <hr>
+
+        <h2>Step 5: Look around (optional)</h2>
+          <p>If you're feeling inquisitive, and want to know what's going on, then notice the following things.</p>
+          <ul class="disc">
+            <li>Your website folder has a .git folder in it.  This marks the folder as a git repository.</li>
+            <li>Your github repository <i>has not changed</i>.  Cloning has no effect on the "remote" (online) repository.  So therefore there are two repositories, the "remote" and the "local".  Github is your remote, and your folder is your local.</li>
+            <li>You can change whatever you want in your folder, but it won't show up online yet.  The remote and local repositories are <b>not automatically synchronized.  That's your job.</b></li>
+            <li>You can make changes in the online version by clicking on files, then clicking on the edit button (pencil icon).  This will <b>not impact your local repository yet, but I would not recommend it right now</b> because you might get "merge conflicts" when you try to synchronize the remote and local repositories.  We don't want to deal with that right now.</li>
+          </ul>
+        <hr>
+
+        <h2>Step 6: Make a beginning website file<h2>
+          <p>If you want to continue your website after today, then I would highly recommend downloading Sublime Text 2, which is an unlimited trial and industry standard.  It's very fast and looks really nice.  Otherwise use Notepad.</p>
+          <p>Make a new file, and type this:</p>
+          <pre>
+            &lt;!doctype html&gt;
+            &lt;html lang="en"&gt;
+            &lt;body&gt;
+              &lt;p&gt;Hello world!&gt;/p&gt;
+            &lt;/body&gt;
+            &lt;/html&gt;
+          </pre>
+          <p>Save it as "index.html".  The filename "index" is reserved as the "starting point" of the website, always.  It's hardwired into web browsers.</p>
+        <hr>
+
+        <h2>Step 7: Git commands tutorial</h2>
+          <p>Here is the list of commands we're going to use with Git.  All quotes are for clarity only (don't use them when you use the command)</p>
+          <ul class="disc">
+            <li>"git status" tells you the status of the repository (if you made changes but didn't save them, if you have conflicts, etc.)</li>
+            <li>"git add" adds files to your next version/commit (same thing).  "git add ." adds all of the files you haven't added yet so you don't have to add them one by one.</li>
+            <li>"git commit -m "message"" creates a new version from all of the green files listed by git status.
+            <li>"git push origin master" changes your online repository (remote) by "pushing" your local versions up to Github.</li>
+
+          </ul>
+          <p>So try this: type in "git status" into Git bash.  It should show up with some red files, probably your index.html file. </p>
+          <p>Now do this: "git add index.html"</p>
+          <p>Type "git status" again to see that it has now changed to the color green.  You're ready to commit!</p>
+          <p>Type "git commit -m "your message here"" and replace 'your message here' with some message like "my first commit" or something.  Make sure it's in quotes, but exclude the first and last quotes, so the whole thing looks like: git commit -m "My first commit"</p>
+          <p>Now you're ready to push to the online version.  Type "git push origin master" and enter your login information.  Check github.com and see that index.html has appeared.  Then go to yourusername.github.io, and see that it says Hello world!  Congrats!</p>
+        <hr>
+
+        <h2>Step 8: Reflection</h2>
+          <p>Okay so let's go over what you have right now.  You have:</p>
+          <ul class="disc">
+            <li>A github account with a Github Pages repository (a special kind of repository that is hosted at yourusername.github.io)</li>
+            <li>A local repository in that folder that you can make changes to, then add those changes, commit those changes, and push those changes back up to github.</li>
+          </ul>
+        <hr>
+
+        <h2>Step 9: Website development</h2>
+          <p>Web programming is unique.  What we have done is created the setup for the "client side" of web programming.  In fact, there are generally two sides, "client side" and "server side."  The client side is what the user sees in the web browser, and the server side is the "central" code, that would keep track of user accounts or do things like store levels for a game (Candy crush does this), etc.  Here are the languages that both use.</p>
+          <ul class="disc">
+            <li>Client side</li>
+            <ul>
+              <li>HTML (Hypertext markup language)- "elements" of a page, like paragraphs and buttons and input text fields and drop downs</li>
+              <li>CSS (Cascading style sheets) - Easy and convenient way to change how things look.  For example, you could say "for all paragraphs, make the text green"</li>
+              <li>Javascript - Makes things move, and makes things do other things.  For example, maybe clicking a button causes a paragraph to vanish.  You would have to do that with Javascript.</li>
+            </ul>
+            <li>Server side - while the three languages in client side all work together, you can choose to use just one language on the server, or multiple, or however many you want.  They all can do more or less the same things.  Here are some of the popular ones</li>
+            <ul>
+              <li>PHP (PHP hypertext preprocessor, or Personal Home Page) - one of the oldest and most popular.</li>
+              <li>Python with web libraries like Flask - growing more popular (because Python is also a well used language for other things).</li>
+              <li>Ruby on Rails - I don't know much about this one, but it's also very popular.</li>
+              <li>Node.js - Javascript on the server side, pretty new (2009)</li>
+            </ul>
+          </ul>
       </div>
+
     </div>
     
     <!--<div class="row">
