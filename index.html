@@ -11,6 +11,23 @@
   </head>
   <body>
 
+    <script>
+      var modes = ["python", "ruby", "javascript", "java", "c_cpp", "scala", "coffee", "scala", "php", "html", "lisp", "text"]
+      var hasQuery = window.location.search.indexOf("?edit=") == 0;
+      if (hasQuery) {
+        var query = window.location.search;
+        for (var mode in modes) {
+          console.log("checking in " + modes[mode]);
+          if (query.indexOf(modes[mode]) != -1) {
+            var a = 'data:text/html, <style type="text/css">#e{position:absolute;top:0;right:0;bottom:0;left:0;}</style>';
+            var b = '<div id="e"></div><script src="http://d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8">';
+            var c = '<\/script><script >var e=ace.edit("e");e.setTheme("ace/theme/monokai");e.getSession().setMode("ace/mode/' + modes[mode] + '");<\/script>';
+            window.location = a + b + c;
+            break;
+          }
+        }
+      }
+    </script>
     <nav class="top-bar" data-topbar role="navigation">
       <ul class="title-area">
         <li class="name">
