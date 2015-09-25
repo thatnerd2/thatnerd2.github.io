@@ -1,0 +1,117 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Knapsack Problem</title>
+    <link rel="stylesheet" href="/css/foundation.css" />
+    <script src="/js/vendor/modernizr.js"></script>
+  </head>
+  <body>
+    <div class="row">
+      <div class="large-12 columns">
+        <h1>Knapsack Problem</h1>
+        <h2 class="subheader">seems like magic</h2>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class = "row">
+      <div class="large-8 medium-8 columns">
+        <p>Suppose you had a thief who broke into a house and saw a bunch of stuff to steal.  Unfortunately, his thief knapsack can only hold 20 pounds, and each of the things to steal weighs some amount, and has some amount of monetary value.  The thief wants to maximize his "bang for the buck" and thus gather as much value for the 20 pounds of knapsack he has.
+        </p>
+
+        <p>Specifically, for weights[] and values[], the <b>ith</b> object the thief sees has a weight of <b>weights[i]</b> and a value of <b>values[i]</b>.  What's the maximum value he can get with some maxWeight pounds?
+        </p>
+
+        <p>So for example, if weights = [10, 5, 6] and values = [20, 5, 6], while maxWeight = 20, he can get a maximum value of 26 with a weight of 16 (he picks the 0th and 2nd items).  How would you write a program to solve for many items, and a large maximum weight?
+        </p>
+        
+        <ul class="accordion" data-accordion>
+          <li class="accordion-navigation">
+            <a href="#panel1a">Hint</a>
+            <div id="panel1a" class="content">
+              <p>There is no analytic way to solve this, unfortunately - you have to brute force it.  But there are a few interesting properties of the problem that allow us some room to be clever.</p>
+
+              <p>One interesting property is that there are a lot of overlapping subproblems here - the "big" solution can be derived from solutions of smaller problems.</p>
+
+              <p>From this property, we can intelligently brute force this problem using the technique of <b>dynamic programming</b>, which means building a table of values, and filling in the later entries of the table using the earlier entries of the table, where the earliest entries of the table are a specifically defined base case.</p>
+            </div>
+          </li>
+          <li class="accordion-navigation">
+            <a href="#panel1b">Solution</a>
+            <div id="panel1b" class="content">
+              <p>There isn't a known analytic way to solve this problem, but we note that the problem can be broken down in 2 different dimensions.  One break the problem down by weight by saying, "What if the thief could only carry 1 pound?  What about 2 pounds?  3 pounds?"  One could also break it down by items by saying, "What if the thief only knew about the first 2 items?  first 3 items?"  Now we know we can use <b>dynamic programming</b> to use those broken down solutions to find our desired, big solution for all values and maximum weight.</p>
+
+              <h2>Base Case<h2>
+
+              <p>Most dynamic programming problems, including this one, require a base case.  In this problem, the base case is fairly intuitive.  We know for sure that if the thief has a maximum weight of 0, then he can't get any value at all.  We also know that if he has seen 0 items, then he also can't get any value.  This is our starting point.</p>
+
+              <h2>Recurrence Relation</h2>
+
+              <p>This is the heavy part of the explanation, so follow closely.  We're going to make a table to hold all of our little solutions - we'll call this table <b>dp</b>.  We'll say that dp is two dimensional, like a basic Excel spreadsheet.  Let's say the number of rows = <b>the length of values[] + 1</b> (the +1 is to account for the base case) and the number of cols = <b>maximum weight.</b>  <b>Notice that this lines up with our supposing in the introductory paragraph</b>, "What about 2,3,4 pounds?  What about 1st, 2nd, 3rd items?" etc.
+
+              <p>First we define what each entry in the table means.  dp[i][j] for all i, j indices in the table is equal to the <i>maximum value that the thief can obtain having looked at the <b>first i items</b>, and constrained by </b>j maximum weight.</b></i></p>
+
+              <p>Now we have to form the <b>recurrence relation</b> which describes <b>how we combine the subproblems into the big solution</b>.  As we look at each next item, if the item's weight is larger than j (our max weight), then we can't take it because it's too heavy - we have to leave it.  If it's not larger than j, then we can either take it or leave it.  If we take it, then we <b>take the best solution we had for j - weight[i - 1], + the value of the item we took, </b>such that takeIt = dp[i][j - weights[i - 1]] + values[i - 1]</b>.  Why weights[i - 1] and values[i - 1]?  Because we augmented our table for the base case.  If we leave it, then our best value is what we had the last time (see how we're tapping into our subproblems?) so dp[i][j] = dp[i - 1][j].  We want the maximum score between taking it and leaving it.  So the algorithm is as follows:
+              </p>
+
+              <pre>
+                is j >= weights[i - 1]?
+                  yes:
+                    takeIt = dp[i][j - weights[i - 1]] + values[i - 1];
+                    leaveIt = dp[i - 1][j];
+                    dp[i][j] = max(takeIt, leaveIt);
+                  no:
+                    dp[i][j] = dp[i - 1][j]
+              </pre>
+
+              <h2>Pseudocode Solution</h2>
+              <p>Supposing we have maximum weight set to 20, values as [20, 5, 6] and weights as [10, 5, 6]:</p>
+
+              <pre>
+                values = [20, 5, 6]
+                weights = [10, 5, 6]
+                MAX_WEIGHT = 20
+
+                dp = array[values.length + 1][MAX_WEIGHT + 1]
+                numRows = values.length + 1
+                numCols = MAX_WEIGHT + 1
+
+                # Loop through the rows and columns
+                for i in [0...numRows]:
+                  for j in [0...numCols]:
+                    # Establish the base case
+                    if i == 0 or j == 0:
+                      dp[i][j] = 0
+                      continue;
+
+                    # Use the recurrence relation
+                    if j >= weights[i - 1]:
+                      takeIt = dp[i - 1][j - weights[j - 1]] + values[i - 1]
+                      leaveIt = dp[i - 1][j]
+                      dp[i][j] = max(takeIt, leaveIt)
+                    else:
+                      dp[i][j] = dp[i - 1][j]
+
+                print "the maximum value the thief can get with his knapsack is " + dp[values.length][MAX_WEIGHT]
+              </pre>
+
+              <p>Seems like magic.</p>
+            </div>
+        </ul>
+        <br>
+        <p><a href="/index.html" class="small button">Home</a><br/>
+      </div>
+
+    </div>
+
+    
+    <script src="/js/vendor/jquery.js"></script>
+    <script src="/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+    </script>
+  </body>
+</html>
