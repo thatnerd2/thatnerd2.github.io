@@ -75,7 +75,7 @@ function GrayTank (game, x, y) {
 	this.movSpeed = 50;
 	this.rotDelay = 800;
 	this.bulletDelay = 0;
-	this.bulletDelayRequirement = 10;
+	this.bulletDelayRequirement = 6;
 	this.body.rotation = this.direction;
 
 	this.multiplayerIx = -1;
@@ -115,25 +115,33 @@ function GrayTank (game, x, y) {
 		var rayToPlayer = new Phaser.Line(this.heart.x, this.heart.y, player.heart.x, player.heart.y);
 		var intersect = getWallIntersection(rayToPlayer);
 		this.seePlayer = (intersect == null);
-		var rayForward = new Phaser.Line(this.heart.x, this.heart.y, Math.cos(this.direction) * 500 + x, Math.sin(this.direction) * 500 + y);
+
+		if (this.distanceToForwardWall(this.direction) < 100 || Math.random() < 0.1) {
+			this.explore();
+		}
+	}
+
+	this.distanceToForwardWall = function (direction) {
+		var rayForward = new Phaser.Line(this.heart.x, this.heart.y, Math.cos(direction) * 1000 + x, Math.sin(direction) * 1000 + y);
 		var wallIntersect = getWallIntersection(rayForward);
 
-		var distance = 0;
+		var distance = 500;
 		if (wallIntersect != null) distance = game.math.distance(this.heart.x, this.heart.y, wallIntersect.x, wallIntersect.y);
+		return distance;
+	}
 
-		if (distance < 100 || Math.random() < 0.1) {
-			// Explore
-			this.direction = getRandomRotation();
-			this.heart.body.velocity.x = 0;
-			this.heart.body.velocity.y = 0;
-			if (isMultiplayer) serverUpdateTankVelocity(this.multiplayerIx);
+	this.explore = function () {
+		var dir1 = getRandomRotation();
+		var dir2 = getRandomRotation();
+		this.direction = this.distanceToForwardWall(dir1) > this.distanceToForwardWall(dir2) ? dir1 : dir2;
+		this.heart.body.velocity.x = 0;
+		this.heart.body.velocity.y = 0;
+		if (isMultiplayer) serverUpdateTankVelocity(this.multiplayerIx);
 
-			dualRotateTo(this.body, this.direction, this.rotDelay).onComplete.add(function () {
-				this.heart.body.velocity.x = this.movSpeed * Math.cos(this.direction);
-				this.heart.body.velocity.y = this.movSpeed * Math.sin(this.direction);
-				if (isMultiplayer) serverUpdateTankVelocity(this.multiplayerIx);
-			}, this);
-		}
+		dualRotateTo(this.body, this.direction, this.rotDelay).onComplete.add(function () {
+			this.heart.body.velocity.x = this.movSpeed * Math.cos(this.direction);
+			this.heart.body.velocity.y = this.movSpeed * Math.sin(this.direction);
+		}, this);
 	}
 	
 
@@ -143,6 +151,8 @@ function GrayTank (game, x, y) {
       this.heart.kill();
 		this.dead = true; 
 	}
+
+	this.explore();
 }
 
 function TealTank (game, x, y) {

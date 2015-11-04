@@ -65,10 +65,7 @@ function preload() {
     left: game.input.keyboard.addKey(Phaser.Keyboard.A),
     right: game.input.keyboard.addKey(Phaser.Keyboard.D)
   }
-  
 
-  if (isMultiplayer) server.readyToStart(clientId);
-  else ready = true;
 }
 
 function create() {
@@ -111,31 +108,39 @@ function create() {
        enemies[id].patrol();
     }
 
-    game.time.events.loop(Phaser.Timer.SECOND / 6, function () {
+    game.time.events.loop(Phaser.Timer.SECOND / 10, function () {
       for (var id in enemies) {
         enemies[id].act();
+      }
+    }, this);
+
+    game.time.events.loop(2*Phaser.Timer.SECOND, function () {
+      for (var id in enemies) {
         enemies[id].move();
       }
     }, this);
 
-    /*game.time.events.loop(Phaser.Timer.SECOND, function () {
+    game.time.events.loop(Phaser.Timer.SECOND, function () {
       console.log(game.time.fps + " FPS");
-    }, this);*/
+    }, this);
+    game.time.advancedTiming = true;
+  }
+
+  watch(game.input.activePointer, ["x", "y"], function() {
+    player.head.rotation = Math.atan2(game.input.activePointer.y - player.heart.y, game.input.activePointer.x - player.heart.x);
+  });
+
+  for(var key in this.cursors) {
+    watch(this.cursors[key], ["isDown"], function () {
+      player.handleMovement(this.cursors);
+    }.bind(this));
   }
 }
 
 function update() {
-  if (ready) {
-    game.physics.arcade.collide(tanks, walls);
-    game.physics.arcade.collide(tanks, tanks);
-    game.physics.arcade.collide(bullets, walls, bulletWallCollide, null, this);
-    game.physics.arcade.collide(bullets, bullets, bulletBulletCollide, null, this);
-    game.physics.arcade.collide(tanks, bullets, destroyTank, null, this);
-    player.head.rotation = Math.atan2(game.input.activePointer.y - player.heart.y, game.input.activePointer.x - player.heart.x);
-    player.handleMovement(this.cursors);
-
-    if (isMultiplayer) {
-      server.updatePlayer(clientId, {x: player.heart.x, y: player.heart.y, rot: player.head.rotation, bodyRot: player.body.rotation});
-    }
-  }
+  game.physics.arcade.collide(tanks, walls);
+  game.physics.arcade.collide(tanks, tanks);
+  game.physics.arcade.collide(bullets, walls, bulletWallCollide, null, this);
+  game.physics.arcade.collide(bullets, bullets, bulletBulletCollide, null, this);
+  game.physics.arcade.collide(tanks, bullets, destroyTank, null, this);
 }

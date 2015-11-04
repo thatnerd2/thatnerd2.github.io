@@ -1,7 +1,3 @@
-var numRows = GAME_WIDTH / WALL_WIDTH;
-var numCols = GAME_HEIGHT / WALL_HEIGHT;
-
-
 function getLayout(level) {
 	var layout = {
 		players: [],
@@ -458,7 +454,6 @@ function getLayout(level) {
 	pathfind.setGrid(layout.grid);
 	pathfind.setAcceptableTiles([0, 2, 9]);
 	pathfind.enableDiagonals();
-	console.log(layout.grid.length + " by " + layout.grid[0].length);
 
 	return layout;
 }

@@ -1,2 +1,2 @@
 tanks shoot too slow
-reset to 1 lif
+reset to 1 life
