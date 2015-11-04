@@ -114,11 +114,14 @@ function create() {
       }
     }, this);
 
-    game.time.events.loop(2*Phaser.Timer.SECOND, function () {
+    game.time.events.loop(Phaser.Timer.SECOND, function () {
       for (var id in enemies) {
         enemies[id].move();
       }
     }, this);
+    for (var id in enemies) {
+      enemies[id].move();
+    }
 
     game.time.events.loop(Phaser.Timer.SECOND, function () {
       console.log(game.time.fps + " FPS");

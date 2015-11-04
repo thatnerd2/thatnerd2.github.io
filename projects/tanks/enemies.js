@@ -86,8 +86,6 @@ function GrayTank (game, x, y) {
 		if (this.seePlayer) this.goalRot = getRadTo(player.heart.x, player.heart.y, this.heart.x, this.heart.y);
 		else this.goalRot = getRandomRotation();
 
-		if (isMultiplayer) serverUpdateTankRotation (this.multiplayerIx);
-
 		rotateTo(this.head, this.goalRot, this.rotDelay - (this.seePlayer ? 400 : 0)).onComplete.add(function () {
 			this.head.rotation = Phaser.Math.wrapAngle(this.head.rotation, true);
 			this.patrol();
@@ -250,11 +248,9 @@ function TealTank (game, x, y) {
 				if (Math.random () < 0.1) {
 					this.state = "PATHFIND";
 				}
-				else if (rand < 0.4) {
-					var rayToPlayer = new Phaser.Line(this.heart.x, this.heart.y, player.heart.x, player.heart.y);
-					var intersect = getWallIntersection(rayToPlayer);
-					this.seePlayer = (intersect == null);
-				}
+				var rayToPlayer = new Phaser.Line(this.heart.x, this.heart.y, player.heart.x, player.heart.y);
+				var intersect = getWallIntersection(rayToPlayer);
+				this.seePlayer = (intersect == null);
 
 				var distance = game.math.distance(this.heart.x, this.heart.y, this.wayPoints[this.wayIx][0], this.wayPoints[this.wayIx][1]);
 				if (distance <= 100) {
@@ -410,8 +406,8 @@ function BlueTank (game, x, y) {
 	this.direction = getRandomRotation();
 	this.movSpeed = 120;
 	this.rotDelay = 500;
-	this.bulletDelay = 10;
-	this.bulletDelayRequirement = 2;
+	this.bulletDelay = 0;
+	this.bulletDelayRequirement = 4;
 	this.body.rotation = this.direction;
 	this.wayPoints = [];
 
@@ -484,11 +480,9 @@ function BlueTank (game, x, y) {
 				if (Math.random () < 0.1) {
 					this.state = "PATHFIND";
 				}
-				else if (rand < 0.4) {
-					var rayToPlayer = new Phaser.Line(this.heart.x, this.heart.y, player.heart.x, player.heart.y);
-					var intersect = getWallIntersection(rayToPlayer);
-					this.seePlayer = (intersect == null);
-				}
+				var rayToPlayer = new Phaser.Line(this.heart.x, this.heart.y, player.heart.x, player.heart.y);
+				var intersect = getWallIntersection(rayToPlayer);
+				this.seePlayer = (intersect == null);
 
 				var distance = game.math.distance(this.heart.x, this.heart.y, this.wayPoints[this.wayIx][0], this.wayPoints[this.wayIx][1]);
 				if (distance <= 100) {
