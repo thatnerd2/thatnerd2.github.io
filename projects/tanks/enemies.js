@@ -10,7 +10,7 @@ function BrownTank (game, x, y) {
 	this.gameObjType = "BROWN TANK";
 
 	this.patrols = true;
-	this.dir = 1;
+	this.dir = 0.5;
 	this.goalRot = 0;
 	this.numBullets = 0;
 	this.maxBullets = 1;
@@ -69,10 +69,10 @@ function GrayTank (game, x, y) {
 	this.patrols = true;
 	this.goalRot = 0;
 	this.numBullets = 0;
-	this.maxBullets = 1;
+	this.maxBullets = 2;
 	this.seePlayer = false;
 	this.direction = getRandomRotation();
-	this.movSpeed = 30;
+	this.movSpeed = 50;
 	this.rotDelay = 800;
 	this.bulletDelay = 0;
 	this.bulletDelayRequirement = 10;
@@ -88,7 +88,7 @@ function GrayTank (game, x, y) {
 
 		if (isMultiplayer) serverUpdateTankRotation (this.multiplayerIx);
 
-		rotateTo(this.head, this.goalRot, this.rotDelay).onComplete.add(function () {
+		rotateTo(this.head, this.goalRot, this.rotDelay - (this.seePlayer ? 400 : 0)).onComplete.add(function () {
 			this.head.rotation = Phaser.Math.wrapAngle(this.head.rotation, true);
 			this.patrol();
 		}, this);
@@ -115,8 +115,6 @@ function GrayTank (game, x, y) {
 		var rayToPlayer = new Phaser.Line(this.heart.x, this.heart.y, player.heart.x, player.heart.y);
 		var intersect = getWallIntersection(rayToPlayer);
 		this.seePlayer = (intersect == null);
-		this.heart.body.velocity.x = this.movSpeed * Math.cos(this.direction);
-		this.heart.body.velocity.y = this.movSpeed * Math.sin(this.direction);
 		var rayForward = new Phaser.Line(this.heart.x, this.heart.y, Math.cos(this.direction) * 500 + x, Math.sin(this.direction) * 500 + y);
 		var wallIntersect = getWallIntersection(rayForward);
 
@@ -167,9 +165,9 @@ function TealTank (game, x, y) {
 	this.seePlayer = false;
 	this.direction = getRandomRotation();
 	this.movSpeed = 60;
-	this.rotDelay = 800;
-	this.bulletDelay = 10;
-	this.bulletDelayRequirement = 12;
+	this.rotDelay = 600;
+	this.bulletDelay = 3;
+	this.bulletDelayRequirement = 6;
 	this.body.rotation = this.direction;
 	this.wayPoints = [];
 
@@ -183,7 +181,7 @@ function TealTank (game, x, y) {
 		if (this.seePlayer) this.goalRot = getRadTo(player.heart.x, player.heart.y, this.heart.x, this.heart.y);
 		else this.goalRot = getRandomRotation();
 
-		rotateTo(this.head, this.goalRot, this.rotDelay).onComplete.add(function () {
+		rotateTo(this.head, this.goalRot, this.rotDelay - (this.seePlayer ? 300 : 0)).onComplete.add(function () {
 			this.head.rotation = Phaser.Math.wrapAngle(this.head.rotation, true);
 			this.patrol();
 		}, this);
@@ -215,7 +213,7 @@ function TealTank (game, x, y) {
 			pathfind.findPath(myCoords[0], myCoords[1], playerCoords[0], playerCoords[1], (function (path) {
 				var modW = WALL_WIDTH / 2;
 				var modH = WALL_HEIGHT / 2;
-				for (var i = 0; i < path.length; i++) {
+				for (var i = 0; i < path.length; i += 2) {
 					//CENTER THESE
 					this.wayPoints.push([path[i].x * WALL_WIDTH + modW, path[i].y * WALL_HEIGHT + modH]);
 				}
@@ -285,8 +283,8 @@ function CircleTank (game, x, y) {
 	this.maxBullets = 1;
 	this.seePlayer = false;
 	this.direction = getRandomRotation();
-	this.movSpeed = 60;
-	this.rotDelay = 800;
+	this.movSpeed = 100;
+	this.rotDelay = 100;
 	this.bulletDelay = 10;
 	this.bulletDelayRequirement = 12;
 	this.wayPoints = [];
@@ -298,7 +296,7 @@ function CircleTank (game, x, y) {
 	this.patrol = function () {
 		if (this.dead) return;
 
-		if (this.seePlayer) this.goalRot = getRadTo(player.body.x, player.body.y, this.body.x, this.body.y);
+		if (this.seePlayer) this.goalRot = getRadTo(player.heart.x, player.heart.y, this.body.x, this.body.y);
 		else this.goalRot = getRandomRotation();
 
 		rotateTo(this.head, this.goalRot, this.rotDelay).onComplete.add(function () {
@@ -355,12 +353,11 @@ function CircleTank (game, x, y) {
 				var rand = Math.random();
 				if (Math.random () < 0.1) {
 					this.state = "PATHFIND";
+					return;
 				}
-				else if (rand < 0.4) {
-					var rayToPlayer = new Phaser.Line(this.body.x, this.body.y, player.body.x, player.body.y);
-					var intersect = getWallIntersection(rayToPlayer);
-					this.seePlayer = (intersect == null);
-				}
+				var rayToPlayer = new Phaser.Line(this.body.x, this.body.y, player.body.x, player.body.y);
+				var intersect = getWallIntersection(rayToPlayer);
+				this.seePlayer = (intersect == null);
 
 				var distance = game.math.distance(this.body.x, this.body.y, this.wayPoints[this.wayIx][0], this.wayPoints[this.wayIx][1]);
 				if (distance >= this.prevDistance) {
@@ -516,7 +513,7 @@ function GreenTank (game, x, y) {
 	this.gameObjType = "BROWN TANK";
 
 	this.patrols = true;
-	this.dir = 1;
+	this.dir = 0.5;
 	this.goalRot = 0;
 	this.numBullets = 0;
 	this.maxBullets = 2;
@@ -539,7 +536,7 @@ function GreenTank (game, x, y) {
 	}
 
 	this.act = function () {
-		if (shouldFire(this.body.x, this.body.y, this.head.rotation, 1) && this.numBullets < this.maxBullets) {
+		if (shouldFire(this.body.x, this.body.y, this.head.rotation, 4) && this.numBullets < this.maxBullets) {
 			var params = {
 				x: this.body.x,
 				y: this.body.y,

@@ -68,12 +68,16 @@ function destroyTank (a, b) {
 
 // ----------------- WALL ----------------------- //
 
-function createWallGroup () {
+function createWallGroup (levelHeight, levelWidth) {
   var group = game.add.physicsGroup(Phaser.Physics.ARCADE);
   borderTop = game.add.sprite(0, 0, 'horizontal_border');
-  borderBottom = game.add.sprite(0, GAME_HEIGHT - WALL_HEIGHT, 'horizontal_border');
+  borderBottom = game.add.sprite(0, levelHeight, 'horizontal_border');
   borderLeft = game.add.sprite(0, 0, 'vertical_border');
-  borderRight = game.add.sprite(GAME_WIDTH - WALL_WIDTH, 0, 'vertical_border');
+  borderRight = game.add.sprite(levelWidth - WALL_WIDTH, 0, 'vertical_border');
+  borderLeft.height = levelHeight;
+  borderRight.height = levelHeight;
+  borderTop.width = levelWidth;
+  borderBottom.width = levelWidth;
   group.add(borderTop);
   group.add(borderBottom);
   group.add(borderLeft);

@@ -53,7 +53,8 @@ function preload() {
 
   game.load.image('horizontal_border', 'assets/horizontal_border.png');
   game.load.image('vertical_border', 'assets/vertical_border.png');
-  game.load.image('wood', 'assets/wood.jpg');
+  game.load.image('wood-big', 'assets/wood-big.jpg');
+  game.load.image('wood-small', 'assets/wood-small.jpg');
   game.load.image('wall1', 'assets/wall1.png');
   game.load.image('bullet_slow', 'assets/bullet_slow.png');
   game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -71,10 +72,11 @@ function preload() {
 }
 
 function create() {
-  game.add.sprite(0, 0, 'wood');
+  if (layout.grid.length < 16) game.add.sprite(0, 0, 'wood-small');
+  else game.add.sprite(0, 0, 'wood-big');
   
   bullets = createBulletGroup();
-  walls = createWallGroup();
+  walls = createWallGroup(layout.grid.length * WALL_HEIGHT, layout.grid[0].length * WALL_WIDTH);
   tanks = game.add.physicsGroup(Phaser.Physics.ARCADE);
 
   enactLayout(layout);
@@ -109,7 +111,7 @@ function create() {
        enemies[id].patrol();
     }
 
-    game.time.events.loop(Phaser.Timer.SECOND / 2, function () {
+    game.time.events.loop(Phaser.Timer.SECOND / 6, function () {
       for (var id in enemies) {
         enemies[id].act();
         enemies[id].move();
@@ -120,7 +122,6 @@ function create() {
       console.log(game.time.fps + " FPS");
     }, this);*/
   }
-  game.time.advancedTiming = true;
 }
 
 function update() {

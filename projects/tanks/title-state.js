@@ -12,9 +12,6 @@ titleState.prototype = {
 		game.stage.backgroundColor = 0xFFFFFF;
 		game.add.text(GAME_WIDTH/3, 100, "TANKS!!!", {size: "48px", fille: "#FFF", align: "center"});
 		var playButton = game.add.button(250, 200, 'play-button', this.startNextMission, this);
-
-		var multiplayerButton = game.add.button(250, 400, 'multiplayer-button', this.startMultiplayer, this);
-		game.time.advancedTiming = true;
 	},
 
 	update: function () {
