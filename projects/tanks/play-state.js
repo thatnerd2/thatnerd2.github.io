@@ -94,7 +94,7 @@ function create() {
         x: player.heart.x + 30 * Math.cos(angleToMouse),
         y: player.heart.y + 30 * Math.sin(angleToMouse),
         speed: PLAYER_BULLET_SPEED,
-        numBounces: 1
+        numBounces: PLAYER_RICOCHET
       }
       
       fire(params, player, true);
