@@ -1,0 +1,117 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dividing Pizzas</title>
+    <link rel="stylesheet" href="/css/foundation.css" />
+    <script src="/js/vendor/modernizr.js"></script>
+  </head>
+  <body>
+    <div class="row">
+      <div class="large-12 columns">
+        <h1>Dividing Pies</h1>
+        <h2 class="subheader">think outside the box</h2>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class = "row">
+      <div class="large-8 medium-8 columns">
+        <p> 
+        	I've got N pizzas, of various types.  F friends are coming to my party, and each one should get a piece of pizza.  However, they should only get one piece of one pizza, otherwise it'll be messy.  A "piece" can be the whole pizza though, that's fine.
+        </p>
+        <p>
+        	My friends are competitive, so if one gets a bigger piece of pizza than the others, everybody gets mad.  So they should all get equally sized (but not necessarily equally shaped) pieces, even if we have to waste some of the pizza.  I also want a piece, so we have to split it F + 1 ways, and I am also whiny if somebody else gets a bigger piece.
+        </p>
+        <p>
+        	What's the algorithm for determining the largest possible piece size all of us can get given a bunch of pizzas?  Each pizza comes with a width w and height h.  You get a computer and a programming language to do this.  And you'll probably need it :-).
+        </p>
+        <p> For example, with 28 people and 6 pizzas with [{w: 3, h: 7}, {w: 2, h: 2}, {w: 3, h: 4}, {w: 6, h: 9}, {w: 3, h: 30}, {w: 3, h: 10}], the maximum slice would be 6.923.
+        <br>
+        <br>
+        <ul class="accordion" data-accordion>
+          <li class="accordion-navigation">
+            <a href="#panel1a">Hint</a>
+            <div id="panel1a" class="content">
+              Trying to figure out a way to split the pizzas is a real pain.  The sub problems aren't independent, and there can be so many different cases (pizzas of size 1, 2, 3, 1000), and decimals are involved.  How else can we solve this?
+            </div>
+          </li>
+          <li class="accordion-navigation">
+            <a href="#panel1b">Solution</a>
+            <div id="panel1b" class="content">
+              <p>I think the best solution to this problem is a binary search on the real numbers.  It won't be exact, but it'll be as close as you want, and it'll be really fast.</p>
+
+              <p>We'll set the high point to the sum of all the areas of the pizzas, and the low point at 0.  We then check the middle.  Notice that it's <b>easy to check if a particular pizza slice size works</b>, because we go down the line of pizzas and subtract our piece size from them, until we either run out (failed) or have extra (success).  If we have a failure, we set the high to the previous midpoint and try the next lower half.  If we succeed, we get more ambitious and try the higher half.  It's like that old guessing game where you're told "high" or "low" when you try to guess a number between 1 and 100.  The best strategy is to guess 50, then 25 or 75, etc.</p>
+
+              <p>Let's see some code in python:</p>
+              <pre>
+numPeople = 28;
+numPizzas = 6;
+pizzas = ["3 7", "2 2", "3 4", "6 9", "3 30", "3 10"];
+
+# Convert the pizzas into their areas
+areas = [];
+for i in range(0, numPizzas):
+	parts = pizzas[i].split(" ");
+	areas.append(int(parts[0]) * int(parts[1]));
+
+# Set the lower and upper bounds
+low = 0;
+high = sum(areas);
+
+# Precision will tell us how much the search has converged.
+precision = 1000;
+prevAnswer = 10000;
+ans = 0;
+while precision > 0.000001:
+	trial = tuple([a for a in areas]);
+	mid = (low + high) / 2.0;
+
+	# We're going to go down the line of pizzas.  We're at pizzaIndex
+	pizzaIndex = 0;
+	fed = 0;
+	failedToFeedAll = False;
+	# We will continue to draw slices until we run out of people to feed.
+	while fed < numPeople:
+		if pizzaIndex >= len(trial):
+			failedToFeedAll = True;
+			break;
+		if trial[pizzaIndex] > mid:
+			# We can get another slice out of this pizza.
+			trial[pizzaIndex] -= mid;
+			fed += 1;
+		else:
+			# We've run out of room on this one, move on.
+			pizzaIndex += 1;
+
+	
+	if not failedToFeedAll:
+		# Looks like this worked, so we get more ambitious
+		precision = abs(mid - prevAnswer);
+		prevAnswer = mid;
+		ans = mid;
+		low = mid;
+	else:
+		# It didn't work, so we move to the lower half.
+		high = mid;
+
+print str(round(ans, 3));
+			</pre>
+            </div>
+        </ul>
+        <br>
+        <p><a href="/index.html" class="small button">Home</a><br/>
+      </div>
+
+    </div>
+
+    
+    <script src="/js/vendor/jquery.js"></script>
+    <script src="/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+    </script>
+  </body>
+</html>
