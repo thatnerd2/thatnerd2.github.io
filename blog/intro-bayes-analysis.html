@@ -58,7 +58,7 @@
           $$\pi(\theta) \sim \text{Beta}(a, b)\\
           \pi(\theta) = \frac{\Gamma(a + b)}{\Gamma(a)\Gamma(b)}\theta^{a - 1}(1 - \theta)^{b - 1}$$
 
-        It's pretty right?</p>
+        It's pretty, right?</p>
 
         <p>Now for the scary part.  We're going to compute the posterior distribution.  This is going to hurt.  Follow along if you'd like, but it's going to be all nice at the end, so you can skip if you want.  One last thing - since the data for Bonds' at-bats and home runs will be in different games.  We're going to assume each game is independent, so we can multiply them together, which is why you see \(\Pi_{i=1}^n\); we're multiplying across all n games.  Also, to keep things a little shorter, I'm going to write \(y\) instead of "data".  But they mean the same thing.  Here we go.  (Run.  Run for your life!)</p>
 
