@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<script type="text/javascript" src="js/phaser.min.js"></script>
+	<script type="text/javascript" src="blob.js"></script>
+	<link rel="stylesheet" href="../css/foundation.css" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+
+<body>
+	<div class="row">
+      <div class="large-12 columns">
+        <h1>Simple Q Reinforcement Learning</h1>
+        <h2 class="subheader">neat</h2>
+      </div>
+    </div>
+	<div class = "row">
+      <div class="large-8 medium-8 columns">
+      	<p>The little green blob right there is a tiny, super-simple artificial intelligence.  Examine the page source and "blob.js" for his Q learning algorithm.  He moves around however he wants.  If he touches the green square, he is rewarded with 50 points.  If he touches the red square, he is punished with -50 points.  Otherwise, he doesn't initially know the layout of the environment, and he doesn't do any planning beforehand.  He stumbles around, learning as he goes, until he figures out that green is good and races toward it all the time (you'll have to let it run for a little while, or adjust the speed).</p>
+
+      	<p>Set Speed (caps at 3000)</p>
+      	<input id="speedInput" type="text"></input>
+      	<button id="setSpeed">Set</button>
+
+      	<p>Click here to choose a block, and then click somewhere on the stage to set it.</p>
+      	<img id="green" width=50 height=50 src="assets/good-space.png"></img>
+      	<img id="red" width=50 height=50 src="assets/bad-space.png"></img>
+      	<img id="wall" width=50 height=50 src="assets/wall.png"></img>
+      	<p id="blockSelectedTxt"></p>
+      	<button id="resetBlob">Reset Brain</button>
+      	<button id="resetMap">Reset Map</button>
+      	<p id="news"></p>
+      </div>
+ 	</div>
+
+ 	<div class="row">
+		<div id="simulation"></div>
+		<div class="large-8 medium-8 columns">
+			<h3>Info</h3>
+			<p id="numgreen"># of green blocks touched: 0</p>
+			<p id="numred"># of red blocks touched: 0</p>
+			<button id="clearStats">Clear</button>
+		</div>
+	</div>
+	<script>
+		var BLOCK_WIDTH = 50;
+		var BLOCK_HEIGHT = 50;
+		var blob;
+		var objs = [];
+		var numGreen = 0;
+		var numRed = 0;
+		var map = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				   [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0],
+				   [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+				   [0, 0, 0, 0, 1, 0, 0, 0, 9, 0, 0, 0],
+				   [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+				   [0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0],
+				   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
+		
+		var simState = function (sim) {};
+
+		simState.prototype = {
+			preload: function () {
+				sim.stage.backgroundColor = 0xffffff;
+				sim.load.image('blob', 'assets/blob.png');
+				sim.load.image('good', 'assets/good-space.png');
+				sim.load.image('bad', 'assets/bad-space.png');
+				sim.load.image('wall', 'assets/wall.png');
+				sim.physics.startSystem(Phaser.Physics.ARCADE);
+			},
+
+			create: function () {
+				var blobr = 0;
+				var blobc = 0;
+				for (var r = 0; r < map.length; r++) {
+					for (var c = 0; c < map[r].length; c++) {
+						if (map[r][c] == 1) {
+							var wall = sim.add.sprite(c * BLOCK_WIDTH, r * BLOCK_HEIGHT, 'wall');
+							wall.width = BLOCK_WIDTH;
+							wall.height = BLOCK_HEIGHT;
+							objs.push(wall);
+						} else if (map[r][c] == 2) {
+							var good = sim.add.sprite(c * BLOCK_WIDTH, r * BLOCK_HEIGHT, 'good');
+							good.width = BLOCK_WIDTH;
+							good.height = BLOCK_HEIGHT;
+							objs.push(good);
+						} else if (map[r][c] == 3) {
+							var bad = sim.add.sprite(c * BLOCK_WIDTH, r * BLOCK_HEIGHT, 'bad');
+							bad.width = BLOCK_WIDTH;
+							bad.height = BLOCK_HEIGHT;
+							objs.push(bad);
+						} else if (map[r][c] == 9) {
+							blobr = r;
+							blobc = c;
+							map[r][c] = 0;
+						}
+					}
+				}
+
+				blob = new Blob(sim, blobr, blobc);
+				objs.push(blob);
+				//sim.time.events.loop(Phaser.Timer.SECOND * 4, function () {
+				var actionLoop = function () {
+					var nextBlobPos = blob.act();
+					var tween = sim.add.tween(blob.spr).to({
+						x: nextBlobPos[1] * BLOCK_WIDTH,
+						y: nextBlobPos[0] * BLOCK_HEIGHT
+					}, blob.speed);
+					tween.onComplete.add(function () {
+						if (map[nextBlobPos[0]][nextBlobPos[1]] != 0) {
+							if (map[nextBlobPos[0]][nextBlobPos[1]] == 2) {
+								numGreen += 1;
+								$("#numgreen").html("# of green blocks touched: " + numGreen);
+							} else {
+								numRed += 1;
+								$("#numred").html("# of red blocks touched: " + numRed);
+							}
+
+							blob.setPosition(blobr, blobc);
+						}
+						actionLoop();
+					});
+					tween.start();
+				}
+				actionLoop();
+			    //}, this);
+			}
+		}
+
+		var sim = new Phaser.Game(600, 400, Phaser.AUTO, 'simulation');
+		sim.state.add('sim-state', simState);
+		sim.state.start('sim-state');
+
+
+		function isValidBoardPosition (pos) {
+			if (pos[0] < 0 || pos[0] >= map.length || pos[1] < 0 || pos[1] >= map[0].length) return false;
+			if (map[pos[0]][pos[1]] == 1) return false;
+			return true;
+		}
+
+		function getReward (pos) {
+			if (map[pos[0]][pos[1]] == 2) return 50;
+			else if (map[pos[0]][pos[1]] == 3) return -50;
+			return 0;
+		}
+
+		var selectedBlock = "";
+
+
+		$("#green").click(function () {
+			selectedBlock = "green";
+			$("#blockSelectedTxt").html("Green block selected (+50)");
+		});
+
+		$("#red").click(function() {
+			selectedBlock = "red";
+			$("#blockSelectedTxt").html("Red block selected (-50)");
+		});
+
+		$("#wall").click(function () {
+			selectedBlock = "wall"
+			$("#blockSelectedTxt").html("Wall block selected");
+		});
+
+		$("#setSpeed").click(function () {
+			var input = $("#speedInput").val();
+			if (!isNaN(input)) {
+				var newSpeed = parseFloat(input);
+				blob.speed = Math.max(3000 - input, 10);
+			}
+		});
+
+		$("#resetBlob").click(function () { 
+			$("#news").html("Brain has been reset."); 
+			blob.resetBrain(); 
+		});
+
+		$("#clearStats").click(function () {
+			numGreen = 0;
+			numRed = 0;
+			$("#numgreen").html("# of green blocks touched: " + numGreen);
+			$("#numred").html("# of red blocks touched: " + numRed);
+		});
+
+		$("#resetMap").click(function () {
+			map[3][8] = 9;
+			sim.state.start("sim-state", true, false);
+		});
+	</script>
+	
+</body>
