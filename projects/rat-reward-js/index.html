@@ -42,6 +42,9 @@
 			<p id="numgreen"># of green blocks touched: 0</p>
 			<p id="numred"># of red blocks touched: 0</p>
 			<button id="clearStats">Clear</button>
+			<br /><br />
+			<h2>How it works</h2>
+			<p>Coming soon, probably after finals are done...</p>
 		</div>
 	</div>
 	<script>
@@ -76,22 +79,10 @@
 				var blobc = 0;
 				for (var r = 0; r < map.length; r++) {
 					for (var c = 0; c < map[r].length; c++) {
-						if (map[r][c] == 1) {
-							var wall = sim.add.sprite(c * BLOCK_WIDTH, r * BLOCK_HEIGHT, 'wall');
-							wall.width = BLOCK_WIDTH;
-							wall.height = BLOCK_HEIGHT;
-							objs.push(wall);
-						} else if (map[r][c] == 2) {
-							var good = sim.add.sprite(c * BLOCK_WIDTH, r * BLOCK_HEIGHT, 'good');
-							good.width = BLOCK_WIDTH;
-							good.height = BLOCK_HEIGHT;
-							objs.push(good);
-						} else if (map[r][c] == 3) {
-							var bad = sim.add.sprite(c * BLOCK_WIDTH, r * BLOCK_HEIGHT, 'bad');
-							bad.width = BLOCK_WIDTH;
-							bad.height = BLOCK_HEIGHT;
-							objs.push(bad);
-						} else if (map[r][c] == 9) {
+						if (map[r][c] == 1) this.build(r, c, 'wall');
+						else if (map[r][c] == 2) this.build(r, c, 'good');
+						else if (map[r][c] == 3) this.build(r, c, 'bad'); 
+						else if (map[r][c] == 9) {
 							blobr = r;
 							blobc = c;
 							map[r][c] = 0;
@@ -101,7 +92,7 @@
 
 				blob = new Blob(sim, blobr, blobc);
 				objs.push(blob);
-				//sim.time.events.loop(Phaser.Timer.SECOND * 4, function () {
+
 				var actionLoop = function () {
 					var nextBlobPos = blob.act();
 					var tween = sim.add.tween(blob.spr).to({
@@ -125,7 +116,25 @@
 					tween.start();
 				}
 				actionLoop();
-			    //}, this);
+
+				sim.input.onDown.add(function () {
+					if (selectedBlock == "") return;
+
+					var c = parseInt(sim.input.activePointer.x/parseFloat(BLOCK_WIDTH));
+					var r = parseInt(sim.input.activePointer.y/parseFloat(BLOCK_HEIGHT));
+					if (r < 0 || r >= map.length || c < 0 || c >= map[r].length) return;
+
+					map[r][c] = selectedBlock;
+					var assetName = (selectedBlock == 1) ? "wall" : ((selectedBlock == 2) ? "good" : "bad");
+					this.build(r, c, assetName);
+			  	}.bind(this));
+			},
+
+			build: function (r, c, asset) {
+				var thing = sim.add.sprite(c * BLOCK_WIDTH, r * BLOCK_HEIGHT, asset);
+				thing.width = BLOCK_WIDTH;
+				thing.height = BLOCK_HEIGHT;
+				objs.push(thing);
 			}
 		}
 
@@ -150,17 +159,17 @@
 
 
 		$("#green").click(function () {
-			selectedBlock = "green";
+			selectedBlock = 2;
 			$("#blockSelectedTxt").html("Green block selected (+50)");
 		});
 
 		$("#red").click(function() {
-			selectedBlock = "red";
+			selectedBlock = 3;
 			$("#blockSelectedTxt").html("Red block selected (-50)");
 		});
 
 		$("#wall").click(function () {
-			selectedBlock = "wall"
+			selectedBlock = 1;
 			$("#blockSelectedTxt").html("Wall block selected");
 		});
 
@@ -185,7 +194,13 @@
 		});
 
 		$("#resetMap").click(function () {
-			map[3][8] = 9;
+			map = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				   [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0],
+				   [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+				   [0, 0, 0, 0, 1, 0, 0, 0, 9, 0, 0, 0],
+				   [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+				   [0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0],
+				   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
 			sim.state.start("sim-state", true, false);
 		});
 	</script>
