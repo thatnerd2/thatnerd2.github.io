@@ -85,7 +85,7 @@ function Blob (world, r, c) {
 	this.setPosition = function (r, c) {
 		this.pos = [r, c]
 		this.posKey = r + "," + c;
-		this.spr.x = c * BLOCK_WIDTH;
+		this.spr.x = 300;
 		this.spr.y = r * BLOCK_HEIGHT;
 	}
 
