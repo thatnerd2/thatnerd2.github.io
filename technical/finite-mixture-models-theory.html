@@ -1,0 +1,66 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Introduction to Bayesian Analysis</title>
+    <link rel="stylesheet" href="/css/foundation.min.css" />
+    <script type="text/javascript"
+      src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    <script src="/js/vendor/modernizr.js"></script>
+  </head>
+  <body>
+    <div class="row">
+      <div class="large-12 columns">
+        <h1>The Theory of Finite Mixture Models</h1>
+        <h2 class="subheader"></h2>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class = "row">
+      <div class="large-8 medium-8 columns">
+
+        <h2>Background</h2>
+        <p>Suppose you have some multimodal data.  Maybe the upper bound on the data is infinite and the lower bound is infinite too.  A Gamma distribution won't work, because the data can be negative.  A Beta distribution won't work because the range of the desired parameters is outside the [0, 1].  The closest you can get is the Normal distribution.  But, since the data is multimodal, that doesn't seem to be able to work either.  What do we do?</p>
+
+        <p>It turns out that one thing you could do is construct what's called a <b>finite mixture model</b>.  This guy is essentially a combination of a number of normal distributions.  Each normal distribution has a particular weight assigned to it, \(\pi_j\) for \(j,...,K\) where K is the number of normal distributions used in the mixture model.  Each normal distribution is known as a <b>mixture component</b>, and has parameters for mean and variance: \(\mu_j, \sigma^2_j\).  So for a particular data set \(y\) where 1 data point is \(y_i\), we can say that \(y_i\) follows a finite mixture if:</p>
+
+        $$
+        \begin{align*}
+        y_i &\sim \Sigma_{i=1}^K\pi_jN(\mu_j, \sigma^2_j)
+        \end{align*}
+        $$
+
+        <p>Thus, the likelihood function for this set of data with parameter vector \(\theta = (\mu_1,...,\mu_K,\sigma^2_1,...,\sigma^2_K,\pi_1,...\pi_K)\), remembering that there are \(N\) data points, would be:</p>
+
+        $$
+        \begin{align*}
+        f(y | \theta) &= \Pi_{i=1}^N\Sigma_{j=1}^K(\pi_j})N(\mu_j, \sigma^2_j)
+        \end{align*}
+        $$
+
+        <p>It so happens that the computation is made easier if "latent component allocaters" are introduced into the equation.  If I said that in public, many people would probably run away.  What I mean is that we can think of each data point being "assigned" a particular normal distribution from which it comes.  That way, we can fit the \(mu_j, \sigma^2_j\) according to each data point assigned to that cluster.  If we leave it like it is, then we have no idea which \(y_i\) goes to which distribution.</p>
+
+        <p>This is why we introduce a set of N "z" parameters, each of them corresponding to a \(y_i\) for each \(i,...,N\)  The <b>value</b> of each \(z_i\) is the component, in the interval [1, K], to which the \(i\)th data point is assigned.  The z values are serving as a kind of mapping - they map each data point to its respective normal distribution "mixture component."</p>
+
+        <p>This means that we can rewrite the likelihood like so:</p>
+
+        $$
+        \begin{align*}
+        f(y | \theta, \pmb{z}) &= \\
+        end{align*}
+        $$
+        <p><a href="/index.html" class="small button">Home</a><br/>
+      </div>
+
+    </div>
+
+    <script src="/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+    </script>
+  </body>
+</html>
