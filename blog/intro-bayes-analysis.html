@@ -24,43 +24,78 @@
       <div class="large-8 medium-8 columns">
 
         <h2>Background</h2>
-        <p>There are two types of analyses in statistics that are pretty well known.  One is <b>frequentist analysis</b>, which is your typical high school AP Stats analysis - using a lot of data to get the mean, standard deviation, maybe a confidence interval.  Another is <b>bayesian analysis</b>; these guys use what they call "prior beliefs" in combination with the data to come up with whole probability distributions (curves that integrate to 1, and show relative probabilities.  This will be clearer later on, promise!).  So, most people know about frequentist analysis.  I'm going to introduce you to bayesian analysis. This will be even cooler if you follow along with paper and pencil.</p> 
+        <p>There are two types of analyses in statistics that are well known.  One is <b>frequentist analysis</b> - confidence intervals, p values, etc.  Another is <b>bayesian analysis</b>.  Bayesians use their prior beliefs in combination with the data to come up with probability distributions (curves that integrate to 1, and show relative probabilities.).  Most technical people know about frequentist analysis, and have heard of p values and such.  I'm going to introduce you to bayesian analysis.  For best results, I suggest that you follow along with paper and pencil.</p> 
 
-        <h2>1. Introduction to the Theory</h2>
+        <h2>Introduction</h2>
 
-        <p>Barry Bonds is a pretty great baseball player.  What if, as the curious statisticians you are, you want to find out the probability \(\theta\) that he hits a home run on any given at-bat?  What you have is data - a bunch of at-bats and whether Bonds has hit a home run for each.  That's great for when you know \(\theta\), because you can just tell me how likely it was that the data happened.  We call this the <b>likelihood</b> function, and it's denoted \(f(\text{data | } \theta) = \text{how likely the data happened given the probability } \theta\).  Don't panic at the symbols, it just means that you have some known \(\theta\) and, using f, you can find out how likely the data is.  <b>The problem is that we don't have some known \(\theta\), and we're trying to get \(\theta\) because we're trying to figure out what Bonds' home-run hitting probability is.</b></p>
+        <p>Barry Bonds is a pretty great baseball player.  What if, as a curious statisticians, you want to find out the probability \(\theta\) that he hits a home run on any given at-bat?  What you have is data - a number of at-bats and whether Bonds has hit a home run for each.  That's great for when you know \(\theta\), because you can tell me how likely it was that the data happened.  We call this the <b>likelihood</b> function, and it's denoted \(f(\text{data | } \theta) = \text{how likely the data happened given the probability } \theta\).  This means that you have some known \(\theta\) and, using f, you can find out how likely the data is.  <b>The problem is that we have the reverse.</b>  We know the data, but we don't know what Bonds' home-run hitting probability is.</p>
 
-        <p>Thomas Bayes was a pretty great statistician.  He came up with <b>Bayes Theorem</b> which does some conversion magic - it converts \(f(X \text{ given } Y)\) into \(f(Y \text{ given } X)\).  We can use it to turn \(f(\text{data | } \theta)\) into \(f(\theta \text{ | data})\), which we give a new name, \(\pi\), so we'll call it \(\pi(\theta \text{ | data})\).  Sounds like a good plan, but what actually is this magic Bayes Theorem that lets us switch the conditions?  Well, in terms of our example, it goes like this: $$\pi(\theta \text{ | data}) = \frac{f(\text{data | } \theta) * \pi(\theta)}{\int_0^1f(\text{data | } \theta) * \pi(\theta)d\theta}$$
+        <p>It turns out that we can use <b>Bayes' theorem</b> to switch the conditions of our likelihood, \(f\).  Bayes theorem is defined as:</p>
 
-        <p> Yeah, so when I first saw this formula my brain just turned off.  But no, bear with me - write that thing down and we'll break it up piece by piece.  There are probably two things that scare you the most - the integral on the bottom, and the \(\pi(\theta)\) on the top (it's not a mistake that it doesn't have the data condition, it's actually a whole new function).</p>
+        $$
+        \begin{align*}
+        P(A\text{ | }B) &= \frac{P(B\text{ | }A) * P(A)}{P(B)}
+        \end{align*}
+        $$
 
-        <h3>1.1 The Scary Integral </h3>
-        Notice that the integrand (the thing inside the integral) and the numerator are the same.  What does this mean?  It pretty much means that <b>the integral is actually the area under the numerator function (with respect to \(\theta\))</b>.  We call it the "Normalizing Constant", because <b>its purpose is to make the resulting \(\pi(\theta \text{ | data})\) integrate to 1</b> because it's a probability, and probabilities should sum to 1, right?
-        <br /><br />
+        <p>Let's recap.  I have \(f(\text{data | }\theta)\), I want a function with the conditions swapped, let's call it \(g(\theta\text{ | data})\).  Let's try plugging it into Bayes' Theorem.</p>
 
-        <h3>1.2 \(\pi(\theta)\)? </h3>
-        In order to make Bayes Theorem work, we need this \(\pi(\theta)\) thing.  We call this the <b>prior distribution</b> and it's one thing that differentiates bayesian statisticians (and also is a point of debate).  Essentially, it's what we believe about the probability of Bonds hitting a home run (\(\theta)\)) before we look at the data.  So in this case, maybe my \(\pi(\theta)\) shows that I think that Barry Bonds is an awesome baseball player so his home run percentage is high.  Or maybe I don't know who Bonds is so I set \(\pi(\theta)\) to show a probability of 2% or something.  It's subjective, and we need it to turn around the conditions.  We'll talk specifics in a few minutes.</p>
+        $$
+        \begin{align*}
+        g(\theta\text{ | data}) &= \frac{f(\text{data | }\theta)*\pi(\theta)}{\text{probability of data}}
+        \end{align*}
+        $$
 
-        <h3>Onward!</h3>
-        Perfect - now given the data, we can find $\theta$ by computing that scary thing.  This is called the <b>posterior distribution</b>.  The posterior distribution gives us a whole curve that maps different possible values of $\theta$ to how likely they are (their "probability density").  Cool, so you can now make some probability statements on Barry Bonds' home run averages, from your prior beliefs and some data.  We're done!  Now let's talk some specifics.</p>
+        <p>We're clearly missing two parts.  What is \(\pi(\theta)\)?  How do we define the probability of the data?</p>
+
+        <h3>Prior distributions</h3>
+        <p>It turns out that \(\pi(\theta)\) is a crucial part of Bayesian analysis - it's called the <b>prior distribution</b>.  Remember that I said that Bayesians use their prior beliefs in combination with the data?  \(\pi(\theta)\) are those prior beliefs.  Maybe, for example, I thought that Barry Bonds' home run hitting percentage was about 10%.  I'd make a statistical distribution around that value: say, a Beta distribution with \(\alpha = 49, \beta = 431\).  Where did I get those numbers?  I just made them up.  This is part of the controversy of the Bayesian method.
+
+        <p>You might be confused about what a Beta distribution is.  Statistical distributions like the Beta distribution are functions that have configurable settings.  The Beta distribution has two settings, \(\alpha\) and \(\beta\).  Setting them gives you a particular curve - in this case, it looks like:</p>
+        <img src="/img/beta-dist.png"></img>
+
+        <p> Notice that with this distribution, I'm showing both my <b>expectation</b>, as you can see from the "highest density" part being around 0.1, and also my <b>uncertainty</b>, which you can see by the spread.  If I was really unsure, the curve would be very flat.  I'm using a distribution as my prior belief because it can represent my beliefs fully.</p>
+
+        <h3>Probability of the Data?</h3>
+        <p>Remember when I said that "Bayesians use their prior beliefs in combination with the data to come up with probability distributions?"  The last two words are key:  probability distribution.  One of the key features of a probability distribution is that it integrates to 1.  Thus, the denominator in our Bayes' theorem equation is going to have to be <b>the area under our new probability distribution on \(\theta\)</b>.  How do we get the area?  Integration.  It is well known that the Beta distribution is bounded, with domain [0, 1].  Thus, the denominator will be \(\int_0^1f(\text{data | }\theta)*\pi(\theta)d\theta\), and our full equation to find \(g\) will be:</p>
+
+        $$
+        \begin{align*}
+        g(\theta\text{ | data}) &= \frac{f(\text{data | }\theta)*\pi(\theta)}{\int_0^1f(\text{data | }\theta)*\pi(\theta)d\theta}
+        \end{align*}
+        $$
+
+        <p>Stare at this for a while until you can explain to yourself, out loud, every part.  Then take a deep breath, and let's write in the numbers.</p>
+
+        <h2>Definitions</h2>
+        <p>Notice that the data we were given, at-bats and whether they were home runs or not, follow what we call a Binomial Distribution.  <b>Thus, we're going to say that \(f(\text{data | }\theta)\) follows a Binomial distribution</b>. A Binomial distribution is meant to represent the number of successes in a sequence of Bernoulli trials.  A Bernoulli trial is a test that results in either success or failure.  The settings of this Binomial distribution are the number of at-bats, and the probability of Barry Bonds hitting a home run.  After configuring those settings, the Binomial distribution is a function where you put in the number of home runs, \(y\), and you get out the probability of \(y\) home runs happening.</p>
+
+        <p>A note about how we will represent the data: in this case, the at-bat is the test, the home run is the success, and the non-home run is a failure.  We can thus represent our data as a string of 0s and 1s.  Summing the 1s gives us the total number of home runs, let's call it \(y\).  Subtracting \(y\) from the total number of numbers, \(n\) (e.g. 00101 would be 5 numbers), gives us the total number of failures.</p>
+
+        <p>I'll just hand the data to you.  \(y = 73, n = 476, n - y = 403\).</p>
+
+        <p>Mathematically, a Binomial distribution function (which is our likelihood function) is defined as:</p>
+
+        $$
+        \begin{align*}
+        f(\text{data | }\theta) &= \binom{n}{y}\theta^y(1 - \theta)^{n - y}
+        \end{align*}
+        $$
+
+        <p>Remember that \(n, \theta\) are the <b>settings</b>, meaning that <b>\(n, \theta\) are constant in the above equation.</b>  All we're changing is \(y\).  This is why the distribution is still a two dimensional curve.</p>
+
+        <p>The Beta distribution is a curve that is bounded by [0, 1], so it's good for representing probabilities.  You could say it's a probability distribution on probabilities.  It's settings are \(\alpha, \beta\) and you put in a number between 0 and 1, and you get out a number between 0 and 1, which represents the probability of your probability.  It's confusing, I know.  Mathematically, it's defined as:</p>
+
+        $$\pi(\theta) = \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\Gamma(\beta)}\theta^{\alpha - 1}(1 - \theta)^{\beta - 1}$$
+
+        <p>Remember that \(\alpha, \beta\) are constant!  You put in \(\theta\) here, and you get out the probability of \(\theta\).</p>
  
-        <h2>Introduction to the Computation By Example</h2>
-        <p>This stuff isn't easy, so if you're just good with the theory and you don't think you can handle this next part, then it's fine if you back out now.  For the rest of you, buckle up, this will be fun!</p>
+        <h2>Posterior Distribution</h2>
+        <p>The theory stops here.  Leave if you want.  Continue if you want to see this Barry Bonds example through.</p>
 
-        <p>Let's attach some math to this symbol notation stuff.  Remember that the likelihood, prior, and posterior, are all <b>distributions</b>, so they look like curves, and they're <b>probability distributions</b>, so they integrate to 1 by definition.  Turns out that there are some well known distributions that come up a lot in real life.  One is called the <b>binomial distribution</b> and we're going to use it for our likelihood function, because it simulates the number of successes (home runs!) in a set of trials (at-bats!).  So it's perfect for this example. It's defined like this:
+        <p> We're going to plug in our mathematical definitions into our Bayes' theorem equation, and we're going to do a ton of algebra, and then we're going to end up with something surprising.  Here we go.</p>
 
-          $$f(\text{data | } \theta) = \binom{n}{x}\theta^{x}(1 - \theta)^{n - x}$$
-
-        where x is the number of home runs hit, and n is the number of at-bats.  It looks scary but it's not too bad.  And there are much worse, trust me.</p>
-
-        <p>The prior distribution we'll use is called the Beta distribution, and it's perfect for looking at probabilities on \(\theta\) (that's right, we're looking at probabilities <b>of probabilities!</b>  Whoa!  Hang in there.)  It looks scarier because involves this thing called the "Gamma function, \(\Gamma(x)\)" which is basically a factorial but if you could do factorial on decimals (cool, right?).  It also relies on two different parameters, \(a, b\), which we get to pick!  It's like customizing a bike or something.  So they end up being constants.  Here it is:
-
-          $$\pi(\theta) \sim \text{Beta}(a, b)\\
-          \pi(\theta) = \frac{\Gamma(a + b)}{\Gamma(a)\Gamma(b)}\theta^{a - 1}(1 - \theta)^{b - 1}$$
-
-        It's pretty, right?</p>
-
-        <p>Now for the scary part.  We're going to compute the posterior distribution.  This is going to hurt.  Follow along if you'd like, but it's going to be all nice at the end, so you can skip if you want.  One last thing - since the data for Bonds' at-bats and home runs will be in different games.  We're going to assume each game is independent, so we can multiply them together, which is why you see \(\Pi_{i=1}^n\); we're multiplying across all n games.  Also, to keep things a little shorter, I'm going to write \(y\) instead of "data".  But they mean the same thing.  Here we go.  (Run.  Run for your life!)</p>
+        <p>To keep things a little shorter, I'm going to write \(y\) instead of "data".  I'm also going to write "a" instead of \(\alpha\) and "b" instead of \(\beta\), because Bayesians usually save the Greek for unknown parameters, and we set a and b ourselves, so they are known.</p>
 
         $$\begin{align*}
         \pi(\theta | y) &= \frac{f(y\text{ | }\theta)\pi(\theta\text{ | }a, b)}{\int_0^1f(y\text{ | }\theta)\pi(\theta\text{ | }a, b)d\theta}\\[2ex]
@@ -73,25 +108,17 @@
         \pi(\theta | y) &\sim \text{Beta}(a + \Sigma_{i=1}^{n}(y_i), b + \Sigma_{i=1}^{n}(n_i - y_i))
         \end{align*} $$
 
-        <p>Whew, okay what just happened?  Well, it turns out that if you combine the Beta distribution and the Binomial distribution, you get a different form of the Beta distribution, so our posterior distribution is that new Beta distribution.  You can see from the formulas that all we had to do to get the posterior distribution is add the total # of home runs to a, and the total # of at-bats - total # of home runs to b, and we would get the posterior distribution.  I just showed you why, with math.</p>
+        <p>This may surprise you, and it only happens rarely.  It turns out that if you combine the Beta distribution and the Binomial distribution, you get a <b>another Beta distribution with different, but related settings.</b> Our posterior distribution is that new Beta distribution.  You can see from the formulas that the posterior distribution's settings are found by adding the total # of home runs to a, and the total # of at-bats - total # of home runs to b.</p>
 
-        <h2>Specifics, and Pictures</h2>
-        <p>Let's suppose that we picked a = 49 and b = 431, after looking over a couple of online stats for Bonds.  Let's also say that the data that we collected is from 2001.  The data shows that Bonds actually hit 73 home runs out of 476 at-bats.  So our posterior distribution has parameters \(a^\prime = 49 + 73 -> a^\prime = \boxed{122}, b^\prime = 431 + (476 - 73) -> b^\prime = \boxed{834}\).  Let's plot them!  (I used R to create the plots)</p>
+        <h2>Results</h2>
+        <p>Let's plug in the specific numbers we mentioned earlier.  a = 49, b = 431, y = 73, n = 476, n - y = 403.  Our posterior distribution has parameters \(a^\prime = 49 + 73 -> a^\prime = \boxed{122}, b^\prime = 431 + (476 - 73) -> b^\prime = \boxed{834}\).  Here's what we get:</p>
         <img src="/img/intro-bayes-analysis-prior-post.png"></img>
 
-        <p>Okay so what is this telling us?  The green line is something I didn't tell you about - it's what the frequentist statisticians would come up with as Barry Bonds' true home-run-hitting average.  Notice that it's not a distribution, and it's not a probability either - it's the value of \(\theta\) that, had you plugged it into our likelihood, would have produced the highest value (it's the value of \(\theta\) that makes our observed data the likeliest to happen, and it's called the Maximum Likelihood Estimator).  Meanwhile, Bayesian analysis has given us a whole distribution which both shows what we expect (the highest part of the distribution, or expected value), as well as <b>the uncertainty that we have, shown by the spread of the distribution</b>.  The more spread out it is, the more uncertain we are.  The prior distribution on the left shows that we expected Bonds to do worse than he actually did, so the posterior dragged the expected value up and tightened the spread because, with more data, we're now more sure about Bonds' home run hitting average.</p>
-
-        <h2>Brief Word on Advantages and Disadvantages to Bayesian Analysis</h2>
-        <p>The advantages include being able to show uncertainty through distributions, and being able to insert some prior beliefs into the data - for example, if Bonds had hit 0 home runs in a small data set, it would be ridiculous to claim that with 100% confidence we think that Bonds' home run hitting average is 0%.  Bayesian priors guard against this, while frequentists would have to explain it ad-hoc.
-        <br />
-        The disadvantages are that the priors are kind of subjective.  What if we're not experts?  I guess we could make our prior more uncertain, or use a uniform prior (like Jerrys noninformative prior).  That would allow the data to take more control over the resulting posterior distribution.  Bayesian analysis is computationally expensive too, but this factor lessens as the days go by and available computational power rises.</p>
-
+        <p>The green line is something I didn't tell you about - it's what frequentist statisticians would come up with as Barry Bonds' true home-run-hitting average.  Notice that it's not a distribution, and it's not a probability either - it's the value of \(\theta\) that, had you plugged it into \(f\), would have produced the highest value.  In other words, it's the value of \(\theta\) that makes our observed data the likeliest to happen, and it's called the Maximum Likelihood Estimator.  Meanwhile, Bayesian analysis has given us a whole distribution which both shows what we expect (the highest part of the distribution, or expected value), as well as the uncertainty that we have, shown by the spread of the distribution.  The prior distribution on the left shows that we expected Bonds to do worse than he actually did, so the posterior dragged the expected value up and tightened the spread because, with more data, we're now more sure about Bonds' home run hitting average.</p>
         <p><a href="/index.html" class="small button">Home</a><br/>
       </div>
 
     </div>
-
-    
     <script src="/js/vendor/jquery.js"></script>
     <script src="/js/foundation.min.js"></script>
     <script>
