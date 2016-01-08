@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Introduction to Bayesian Analysis</title>
+    <title>Introduction to Finite Mixture Model</title>
     <link rel="stylesheet" href="/css/foundation.min.css" />
     <script type="text/javascript"
       src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -13,8 +13,8 @@
   <body>
     <div class="row">
       <div class="large-12 columns">
-        <h1>The Theory of Finite Mixture Models</h1>
-        <h2 class="subheader"></h2>
+        <h1>Introduction to Finite Mixture Models</h1>
+        <h2 class="subheader">my brain hurts</h2>
       </div>
     </div>
 
@@ -22,11 +22,13 @@
 
     <div class = "row">
       <div class="large-8 medium-8 columns">
+        <h2>Prerequisites</h2>
+        <p>This isn't an "explain it like I'm 4"-feasible concept.  You'll need to know some terminology, like multimodal, distribution, Bayes theorem, etc.  The following explanation is going to use all of that.</p>
 
         <h2>Background</h2>
         <p>Suppose you have some multimodal data.  Maybe the upper bound on the data is infinite and the lower bound is infinite too.  A Gamma distribution won't work, because the data can be negative.  A Beta distribution won't work because the range of the desired parameters is outside the [0, 1].  The closest you can get is the Normal distribution.  But, since the data is multimodal, that doesn't seem to be able to work either.  What do we do?</p>
 
-        <p>It turns out that one thing you could do is construct what's called a <b>finite mixture model</b>.  This guy is essentially a combination of a number of normal distributions.  Each normal distribution has a particular weight assigned to it, \(\pi_j\) for \(j,...,K\) where K is the number of normal distributions used in the mixture model.  Each normal distribution is known as a <b>mixture component</b>, and has parameters for mean and variance: \(\mu_j, \sigma^2_j\).  So for a particular data set \(y\) where 1 data point is \(y_i\), we can say that \(y_i\) follows a finite mixture if:</p>
+        <p>It turns out that one thing you could do is construct a <b>finite mixture model</b>.  It's essentially a combination of a number of normal distributions.  Each normal distribution has a particular weight assigned to it, \(\pi_j\) for \(j = 1 \rightarrow K\) where K is the number of normal distributions used in the mixture model.  Each normal distribution is known as a <b>mixture component</b>, and has parameters for mean and variance: \(\mu_j, \sigma^2_j\).  So for a particular data set \(y\) where 1 data point is \(y_i\), we can say that \(y_i\) follows a finite mixture if:</p>
 
         $$
         \begin{align*}
