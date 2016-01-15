@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+  <script src="semantic/dist/jquery-2.2.0.min.js"></script>
+  <script src="semantic/dist/semantic.min.js"></script>
+</head>
+
+<body>
+    <div class="ui page grid">
+        <div class="row"></div>
+        <div class="row">
+          <a href="index.html" class="ui blue button">&laquo; Home</a>
+        </div>
+        <div class="row">
+          <h1>Contact BYU Data Science Club</h1>
+        </div>
+        <div class="sixteen wide row">
+
+          <div class="ui message ten wide column"> <!--<action="http://formspree.io/xxxx@gmail.com" method="POST">-->
+            <form class="ui center aligned form">
+              <div class="twelve wide field">
+                <label>Name</label>
+                <input type="text" name="name" placeholder="Name">
+              </div>
+              <div class="twelve wide field">
+                <label>How do we contact you?</label>
+                <input type="text" name="email-address" placeholder="Email Address, Phone #, ...">
+              </div>
+              <div class="twelve wide field">
+                <label>Subject</label>
+                <input type="text" name="subject" placeholder="Subject">
+              </div>
+              <div class="field">
+                <label>Message</label>
+                <textarea name="message"></textarea>
+              </div>
+              <button class="ui button" type="submit">Submit</button>
+            </form>
+          </div>
+        </div>
+    </div>
+</body>
+<script>
+  $('.ui.form')
+  .form({
+    fields: {
+      'name'            : 'empty',
+      'email-address'   : 'empty',
+      'subject'         : 'empty',
+      'message'         : 'empty'
+    }
+  });
+</script>
+</html>

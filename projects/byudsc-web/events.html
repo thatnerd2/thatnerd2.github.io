@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+  <script src="semantic/dist/jquery-2.2.0.min.js"></script>
+  <script src="semantic/dist/semantic.min.js"></script>
+</head>
+
+<body>
+  <div class="ui page grid">
+    <div class="row">
+      <div style="padding-top: 1em" class="column padding-reset">
+        <div class="ui huge message page center aligned grid">
+          <h1 class="ui huge header">Events</h1>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+
+      <div class="ui vertical menu">
+        <center><a href="index.html" class="ui blue button">&laquo; Home</a></center>
+        <div class="item">
+          <div class="header">January 2016 (newest goes here)</div>
+          <div class="menu">
+            <a class="item">Meeting</a>
+            <a class="item">Data Science Club Kickoff</a>
+          </div>
+        </div>
+        <div class="item">
+          <div class="header">(Older...)</div>
+          <div class="menu">
+            <a class="item">...</a>
+            <a class="item">...</a>
+            <a class="item">...</a>
+          </div>
+        </div>
+        <div class="item">
+          <div class="header">(Even older...)</div>
+          <div class="menu">
+            <a class="item">....</a>
+            <a class="item">....</a>
+          </div>
+        </div>
+        <div class="item">
+          <div class="header">(x months old...)</div>
+          <div class="menu">
+            <a class="item">...</a>
+            <a class="item">...</a>
+          </div>
+        </div>
+        
+      </div>
+      <div class="two wide column"></div>
+      <div class="ten wide column">
+        <h1>Meeting</h1>
+        <p><i>January 21st, 2016</i></p>
+        <p>Will be held in XXX TMCB at 8:00pm.  Be there to discuss approaches to the "Homesite Quote Conversion" problem!</p>
+        <hr></hr>
+        <div>
+          <h2>Data Science Club Kickoff</h2>
+          <p><i>January 14st, 2016</i></p>
+          <p><b>Meeting recap</b></p>
+          <p>We have chosen to compete in the "Homesite Quote Conversion" competition as a club (https://www.kaggle.com/c/homesite-quote-conversion) This data set is big enough that it will be a challenge for advanced players but also straightforward enough for beginners to learn from. It will be good for us to compete as a club so that we can all help each other out. Also, if we win, there is a $20,000 prize. This competition will end in about one month on February 8th.</p>
+
+          <p><b>Competition Goal before next week</b></p>
+
+          <p>The goal that we set as a team for the competition is the following: 
+          Experienced people: make at least one code submission, even if it's naiive and not super good. 
+          Beginners: Download the data. Play around with it. Learn about a machine learning model to prepare for next week's meeting (if you don't know what to learn about, check out 'scikit learn') </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  $('.ui.form')
+  .form({
+    fields: {
+      'name'            : 'empty',
+      'email-address'   : 'empty',
+      'subject'         : 'empty',
+      'message'         : 'empty'
+    }
+  });
+</script>
+</html>
