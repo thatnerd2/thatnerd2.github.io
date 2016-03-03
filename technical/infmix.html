@@ -1,0 +1,246 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Infinite Mixture Model</title>
+    <link rel="stylesheet" href="/css/foundation.min.css" />
+    <script type="text/javascript"
+      src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    <script>
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      }
+    });
+     MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+     </script>
+    <script src="/js/vendor/modernizr.js"></script>
+  </head>
+  <body>
+    <div class="row">
+      <div class="large-12 columns">
+        <h1>Infinite Mixture Models</h1>
+        <h2 class="subheader">flexible</h2>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class = "row">
+       <div class="large-8 medium-8 columns">
+       <p>One of the problems with constructing a finite mixture is that you have to micromanage it.  For each model, you choose some fixed number of clusters.</p>
+
+        <p>When you don't have a lot of data, you can afford to lean on your own understanding.  Otherwise, learning the model from the data is a pretty safe bet.  So how do we extend these finite mixture models into something more flexible?  Infinite mixture models.</p>
+
+        <p>By infinite, I simply mean unbounded.  By unbounded, I mean that the model learns the number of clusters from the data, which means it can approximate any smooth density.</p>
+
+        <p>Where do we even begin?</p>
+
+        <h2>The Dirichlet Process</h2>
+
+        <p>The Dirichlet Process is different from the Dirichlet distribution, but they are obviously related.  The Dirichlet distribution is a generalization of the Beta distribution to three dimensions.  The Dirichlet Process is even more general then that.  How do you get even more general?  The Dirichlet Distribution is a distribution of probability distributions.  Take a draw from it, and you get a probability distribution.  This is the kind of flexibility we'll need for the infinite mixture model.</p>
+
+        <p>How do you simulate it?  There are a few direct ways of doing it, like the Chinese restaurant process, stick breaking process, and Polya urn simulation.  The algorithm we'll use for an infinite mixture model doesn't use these directly, but it draws their ideas into something more computationally friendly.</p>
+
+        <h2>The Chinese Restaurant Process</h2>
+
+        <p>Imagine you're at a restaurant where guests come in, choose a table, and sit down.  Let's say person Bob comes in, and sits down at a table.  Bob orders food for the table.  Let's lay out some mathematical terms.  There are currently $n = 1$ people at the table (just Bob).  There's only one table, with just Bob sitting at it, so let's say $n_1 = 1$ where $n_1$ is referring tot he first table.  There's also a special $\alpha$ value that you, the manager, get to arbitrarily set (in the Dirichlet process it's called the concentration parameter).  Joe enters the restaurant and chooses to either sit with Bob with probability $\frac{n_k}{n + \alpha}$, or go to a different table with probability $\frac{\alpha}{n + \alpha}$.</p>
+
+        <p>You might notice here that the probability of going to a new table stays the same, but the probability of going to Bob's table (or Alice's table, or (anyone else who starts a new table)'s, table) is increasing the more people go there!  This scheme is called the "rich get richer" scheme, and it's a feature of the Dirichlet Process.  It basically make sure our clustering doesn't go out of control.  It would be meaningless if everybody got their own table (unless you had some really strange data!).  But the rate of the rich getting richer is of course up to you, the manager, who sets the $\alpha$ parameter.  That's why $\alpha$ is called the concentration parameter - it dictates how concentrated each cluster is.  It's proportional to how much people clump together.</p>
+
+        <p>In this model, each person is a data point.  As the data points come in, some of them get assigned to "tables", which have certain set parameters (means, variances etc.  It's kind of like the food at each table.).  The more data there is, the more likely that an incoming data point will be assigned to an existing cluster.</p>
+
+        <h2>The Other Representations</h2>
+
+        <p>The other representations have their benefits - the stick breaking process essentially vectorizes the process of the people come in (everybody comes in at the same time), using a weighted Beta distribution, which is more true to the Dirichlet Process (it doesn't go one data point at a time).  I'm not terribly familiar with the Polya urn process, but I think it better shows how multiple draws of the Dirichlet Process lead to different probability distributions.</p>
+
+        <h2>An Infinite Mixture Model</h2>
+        <p>How do we translate this into code?  More importantly, where do priors come in?</p>
+
+        <p>Remember that each person that was first to a table in the Chinese restaurant "ordered food?"  That initial food comes from our prior distribution, also known as the base distribution of the Dirichlet process.  Since the parameters will be updated through Gibbs sampling, the base distribution does not determine the final values of the parameters, but be very careful with your prior specifications.  Vague priors and narrow priors can both throw off the clustering.  Keep in mind that the base distribution doesn't have to be symmetric.  In the algorithm, it's simply where we draw our initial parameter values.</p>
+
+        <p>Since infinite mixture models are essentially extended finite mixture models, we're going to be borrowing many of the same ideas, especially the idea of auxiliary parameters, which tells us that we can add in new variables into the Markov Chain, as long as integrating them out doesn't change the target distribution.  This lets us be clever.</p>
+
+        <p>In the finite mixture model, we introduced some $z$ auxiliary parameters, where $z = (z_1,...z_n)$ where n is the number of data points, and $z_i = k, i$ in $ (1..n)$ tells us that the $i$th data point is assigned to the $k$th cluster.</p>
+
+        <p>We're going to use the same idea for the infinite mixture model, we'll call them $c$ though.  Thus, there is some $c = (c_1,...c_n)$ where n is the number of data points.  But how are we going to assign to clusters?  After all, the number of clusters should be unbounded.</p>
+
+        <h2>The Algorithm</h2>
+
+        <p>We'll start with some arbitrary setup, maybe we'll assign all of the data to one cluster.  For that cluster's parameters, we'll draw from the base distribution.  If you're concerned that the base distribution only outputs one value, know that you can use multiple base distributions.</p>
+
+        <p>For each $i = 1,...n$, we're going to run some kind of updating function on $c_i$.  In order to do this, we'll first rearrange all of the $c$ values.  Let's define some new terms to help me consolidate my writing.  We'll let $k^*$ be the number of unique clusters that don't include $c_i$.  So if your $c$ vector is $(1, 2, 1, 2, 3)$ and we're looking at $c_1$, then $k = 3$, because the other clusters that aren't $c_i$ are labeled 1, 2 and 3.  Interesting bit of information for later - if we were looking at $c_5$, $k^* = 2$ for (1, 2).  Ignoring $c_i$ would actually decrease $k^*$ by 1.  That will be important when we talk about singletons.  Also, remember that the labels themselves (1, 2, 3) don't matter!  They could be like, (0.78, 0.35, 0.99).  It's just a name.</p>
+
+        <p>Anyway, we need to relabel every label that's not the value of $c_i$ to some number in $1..k^*$.  Since this would probably mean writing over what $c_i$ currently is, we need to reassign $c_i$ <b>before</b> we do the mass relabeling.</p>
+
+        <p>Pause for a second.  The other concept we need as part of our algorithm is the property of a Dirichlet Process.  That essentially means that this algorithm should be able to discover more clusters.  What we'll do to simulate this is create pretend clusters that don't exist yet.  We'll call the number of pretend clusters $m$, and we'll set some value $h = k^* + m$.  Each pretend cluster will have its parameter(s) drawn from the base distribution(s).  I guess they're "pretend" clusters in the sense that there are no data points assigned to them yet.</p>
+
+        <p>Okay, back to business.  Remember we need to set $c_i$ before we mass relabel $c_j, j \neq i$ for values $1..k^*$.  What we set $c_i$ to is actually dependent on whether $c_i$ is a <b>singleton</b>, which means its in its own group.  With $c = (1, 2, 1, 2, 3)$, $c_5$ would be a singleton (indexing starting from 1), since it's the only value of 3 in the group.  If $c_i$ is a singleton, we set $c_i = k^* + 1$, and if not, then we set $c_i = k^*$.  Don't forget that you have to update every value in $c$ that corresponds to $c_i$.  So since $c_i = 1$, we have to update both $c_1 = k^*$ + 1, $c_3 = k^* + 1$. This makes more sense when you implement it - it's to ensure that the labels don't overlap.  For the above example of $c = (1, 2, 1, 2, 3)$, and updating $c_i$, our end state would be $(3, 1, 3, 1, 2)$.</p>
+
+        <p>Now that we have our new $c$ vector, we need to calculate for each $c_i$ a big list of $h$ probabilities, we'll call it $P(c_i = x), x \in 1..h$.  We do that with these scary formulas:</p>
+
+        <p>where "explain variables here"</p>
+
+        <p>We then use the big vector of probabilities in a multinomial distribution which returns a vector of the same size, but with a 1 in a position and 0s everywhere else.  That position is the chosen cluster for this data point.</p>
+
+        <p>After we've done this for all $c_i, 1 \leq i \leq n$, we're going to update our parameters a la Gibbs sampler in each cluster.  So, for each cluster, take its associated data points, mapping them with the $c$ values, and update it Bayesian style however you want - some possibilities include Metropolis Hastings step for nonconjugate priors, or the conjugate relationships.</p>
+
+        <p>Repeat this process a lot.</p>
+
+        <h2>Implementation Notes</h2>
+
+        <p>When implementing this, it's probably convenient to have an additional vector that maps labels to the parameter values themselves.  How you manage it is up to you.  Although, if you come up with some clever data structure, I bet you would never even have to update the $c$ values.  I've written it in R and posted the code below.</p>
+
+        <pre>
+
+if ("MCMCpack" %in% rownames(installed.packages())) {
+  require("MCMCpack")
+} else {
+  install.packages("MCMCpack")
+  require("MCMCpack")
+}
+library(MASS)
+data(galaxies)
+galaxies = galaxies / 1000
+
+# Helper functions:
+map = function (f, l) unlist(lapply(l, f))
+printVec = function (msg, vec) print(paste(msg, paste(vec, collapse=", ")))
+
+RUNS = 10000
+m = 1
+m.prior = 0
+s2.prior = 1
+y = c(-1.48, -1.4, -1.16, -1.08, -1.02, 0.14, 0.51, 0.53, 0.78)
+n = length(y)
+G0 = function () { rnorm(1, m.prior, s2.prior) }
+alpha = 1
+
+F = function (data, param) { dnorm(data, param, 1) }
+
+cs = rep(1, n)
+phis = map(function (x) { G0() }, 1:length(unique(cs)))
+phi.labels = rep(1, length(unique(cs))) # each phi_c is equivalent to phis[i]_phi.labels[i] /trollface
+# phi.labels is guaranteed to have unique names.  So if you want the phi according to some c_j,
+# do phis[match(c_j, phi.labels)].  
+print(paste("CS: ", paste(cs, collapse=" ")))
+print(paste("Phis: ", paste(phis, collapse=" ")))
+
+for (t in 1:RUNS) {
+  for (i in 1:n) {
+    is.singleton = sum(cs == cs[i]) > 1
+    
+    uniq = unique(cs[cs != cs[i]])
+    k.minus = length(unique(cs[-i])) # Number of distinct c_j for j != i
+    h = k.minus + m
+    
+    # Replace values in cs[-i] with labels {1,...k.minus}
+    # First, negate everything to get distinguishable before and afters
+    ids = uniq * -1
+    saved.csi = cs[i]
+    cs = cs * -1
+    phi.labels = phi.labels * -1;
+    
+    # Flip all ith entries to prevent them from reassignment
+    cs = replace(cs, cs == -1 * saved.csi, k.minus)
+    phi.labels[phi.labels == -1 * saved.csi] = if (is.singleton) k.minus else k.minus + 1
+    
+    # Begin reassignments
+    # length(uniq) <-> k.minus - 1
+    for (j in 1:length(uniq)) {
+      # Before we update cs, update phis.  I think you need this but not sure
+      # Remember that uniq is still positive - ids is uniq negated.
+      phi.labels[phi.labels == -1 * uniq[j]] = j
+      
+      # Now set value of all c of this unique cluster to j
+      cs = replace(cs, cs == ids[j], j)
+    }
+    
+    if (is.singleton) {
+      # Produce new values from G0 for those phi_c
+      # for which k.minus + 1 < c <= h.
+      for (j in (k.minus + 1):h) {
+        phis = c(phis, G0())
+        phi.labels = c(phi.labels, j)
+      }
+    }
+    else {
+      # Since c_i != c_j for any j != i, that means cs[i] is its own cluster.  Thus, there
+      # must exist a phi_{k.minus + 1} already.
+      j = k.minus + 2
+      while (j <= h) {
+        phis = c(phis, G0())
+        phi.labels = c(phi.labels, j)
+        j = j + 1
+      }
+    }
+    
+    # Draw a new value of c_i from {1...h}
+    ps = vector("numeric", h) # Accounts for every c
+    for (j in 1:h) {
+      if (j <= k.minus) {
+        # phis[which(phi.labels == j)[1]] in English is phis at the first index where the label is 1.
+        # e.g. labels 2, 3, 1, and you want the phi which corresponds to 1, you get phis[3] (because
+        # labels[3] = 1, phis[3] = 1, and which(phi.labels == 1)[1] = 3).
+        
+        # Don't worry too much about the [1] part of the which function - it's guaranteed to only
+        # return a vector of 1 anyway - phi.labels are unique!
+        n.minus.i = length(match(cs[-i], j)) # number of c_q for q != i equal to loop var j
+        ps[j] = n.minus.i / (n - 1 + alpha) * F(y[i], phis[which(phi.labels == j)[1]])
+      }
+      else {
+        ps[j] = (alpha / m) /(n - 1 + alpha) * F(y[i], phis[which(phi.labels == j)[1]])
+      }
+    }
+    ps = ps / sum(ps)
+    # Multinomial distribution to select cluster
+    cs[i] = match(1, rmultinom(n = 1, size = 1, ps)[,1])
+    
+    # Cull irrelevant phis
+    # by that I mean find phi.labels that are not in cs.  remove those.
+    # as long as you remove 1 from both phis and phi.labels, they should sync up fine.
+    phis = phis[phi.labels %in% cs]
+    phi.labels = phi.labels[phi.labels %in% cs]
+    
+  }
+  
+  # for all c element of {c_1,...,c_n}, update those phi_c | y_i, using your F
+  # You'll be updating same phi multiple times, but given different data, a la Gibbs.
+  for (i in 1:length(cs)) {
+    data = y[which(cs == cs[i])]
+    n.j = length(data)
+    # The 1 refers to the set sigma^2 in this demo problem.  Change later.
+    m.star = (s2.prior*sum(data) + 1*m.prior) / (s2.prior*n.j + 1)
+    s2.star = (1 * s2.prior) / (s2.prior * n.j + 1)
+    phis[which(phi.labels == cs[i])] = rnorm(1, m.star, sqrt(s2.star))
+  }
+}
+
+plot(density(y))
+for (i in 1:length(phis)) {
+  curve(dnorm(x, phis[i], 1), add = T, lty=2, col = "blue")
+}
+
+
+</pre>
+
+        <p>This will get you as far as determining the normal models.  It's up to you to construct the posterior predictive.</p>
+
+
+      
+        <a href="/index.html" class="small button">Home</a><br/>
+      </div>
+
+    </div>
+
+    <script src="/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      
+    </script>
+  </body>
+</html>
